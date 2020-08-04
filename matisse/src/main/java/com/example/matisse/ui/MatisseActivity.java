@@ -1,8 +1,10 @@
-package com.example.matisse;
+package com.example.matisse.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.example.matisse.R;
 
 public class MatisseActivity extends AppCompatActivity {
 
