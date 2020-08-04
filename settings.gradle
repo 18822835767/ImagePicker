@@ -1,3 +1,4 @@
 rootProject.name='ImagePicker'
 include ':app'
 include ':picasso'
+include ':matisse'
