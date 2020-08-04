@@ -17,7 +17,8 @@ import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
 
-import static com.example.trypicasso.ImageUtil.Dispatcher.HUNTER_BATCH_COMPLETE;
+import static com.example.picasso.ImageUtil.Dispatcher.HUNTER_BATCH_COMPLETE;
+
 
 public class Picasso {
     private static volatile Picasso singleton = null;
