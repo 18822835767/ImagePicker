@@ -21,4 +21,8 @@ public class Matisse {
     public SelectionCreator choose(){
         return new SelectionCreator(this);
     }
+    
+    public Activity getActivity(){
+        return mContext.get();
+    }
 }
