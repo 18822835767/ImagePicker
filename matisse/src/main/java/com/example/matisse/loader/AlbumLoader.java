@@ -20,21 +20,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.loader.content.CursorLoader;
 
+import static com.example.matisse.util.Constant.AlbumLoaderConstants.COLUMN_BUCKET_DISPLAY_NAME;
+import static com.example.matisse.util.Constant.AlbumLoaderConstants.COLUMN_BUCKET_ID;
+import static com.example.matisse.util.Constant.AlbumLoaderConstants.COLUMN_COUNT;
+import static com.example.matisse.util.Constant.AlbumLoaderConstants.COLUMN_URI;
+import static com.example.matisse.util.Constant.AlbumLoaderConstants.QUERY_URI;
+
 /**
  * 用于加载图库相册信息的loader.
  */
 public class AlbumLoader extends CursorLoader {
-
-    private static final String COLUMN_BUCKET_ID = "bucket_id";
-    private static final String COLUMN_BUCKET_DISPLAY_NAME = "bucket_display_name";
-    public static final String COLUMN_URI = "uri";
-    public static final String COLUMN_COUNT = "count";
-
-    /**
-     * 访问路径.
-     */
-    private static final Uri QUERY_URI = MediaStore.Files.getContentUri("external");
-
+    
     /**
      * 表的列的名字,
      */

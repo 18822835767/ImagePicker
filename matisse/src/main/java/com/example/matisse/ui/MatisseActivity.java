@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.loader.app.LoaderManager;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -36,11 +35,11 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
             PermissionHelper.requestPermissions(this, new String[]{Manifest.permission.
                     READ_EXTERNAL_STORAGE}, REQUEST_CODE);
         } else {
-            initData();
+            initAlbumData();
         }
     }
 
-    private void initData() {
+    private void initAlbumData() {
         mAlbumCollection.onCreate(this, this);
         mAlbumCollection.loadAlbums();
     }
@@ -80,7 +79,7 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                initData();
+                initAlbumData();
             } else {
                 Toast.makeText(this, "拒绝权限将无法选择图片", Toast.LENGTH_SHORT).show();
                 finish();

@@ -28,24 +28,28 @@ public class AlbumCollection implements LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
      * Loader的Id.
-     * */
+     */
     private static final int LOADER_ID = 1;
-    
+
+    /**
+     * 记录当前选中的相册索引，初始时为0.
+     */
     private int mCurrentSelection;
+
     private AlbumCallbacks mCallbacks;
     private LoaderManager mLoaderManager;
     private boolean mLoadFinished;
-    
+
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
         Context context = mContext.get();
-        if(context == null){
+        if (context == null) {
             return null;
         }
-        
+
         mLoadFinished = false;
-        
+
         return AlbumLoader.newInstance(context);
     }
 
@@ -71,8 +75,8 @@ public class AlbumCollection implements LoaderManager.LoaderCallbacks<Cursor> {
 
         mCallbacks.onAlbumReset();
     }
-    
-    public void onCreate(FragmentActivity activity, AlbumCallbacks callbacks){
+
+    public void onCreate(FragmentActivity activity, AlbumCallbacks callbacks) {
         mContext = new WeakReference<Context>(activity);
         mLoaderManager = LoaderManager.getInstance(activity);
         mCallbacks = callbacks;
@@ -84,9 +88,9 @@ public class AlbumCollection implements LoaderManager.LoaderCallbacks<Cursor> {
         }
         mCallbacks = null;
     }
-    
-    public void loadAlbums(){
-        mLoaderManager.initLoader(LOADER_ID,null,this);
+
+    public void loadAlbums() {
+        mLoaderManager.initLoader(LOADER_ID, null, this);
     }
 
     public int getCurrentSelection() {
@@ -96,7 +100,7 @@ public class AlbumCollection implements LoaderManager.LoaderCallbacks<Cursor> {
     public void setStateCurrentSelection(int currentSelection) {
         mCurrentSelection = currentSelection;
     }
-    
+
     public interface AlbumCallbacks {
         void onAlbumLoad(Cursor cursor);
 
