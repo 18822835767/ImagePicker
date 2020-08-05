@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 
+import com.example.matisse.loader.AlbumLoader;
+
 import java.lang.ref.WeakReference;
 
 import androidx.annotation.NonNull;
@@ -37,9 +39,14 @@ public class AlbumCollection implements LoaderManager.LoaderCallbacks<Cursor> {
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
+        Context context = mContext.get();
+        if(context == null){
+            return null;
+        }
         
+        mLoadFinished = false;
         
-        return null;
+        return AlbumLoader.newInstance(context);
     }
 
     @Override
