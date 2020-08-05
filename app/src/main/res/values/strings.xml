@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ImagePicker</string>
+    <string name="choose_imgaes">图片选择</string>
 </resources>
