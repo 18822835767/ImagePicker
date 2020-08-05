@@ -27,18 +27,21 @@ public class AlbumSpinner {
 
     private ListPopupWindow mListPopupWindow;
     private CursorAdapter mAdapter;
-
+    private AdapterView.OnItemSelectedListener mOnItemSelectedListener;
 
     public AlbumSpinner(Context context) {
         mListPopupWindow = new ListPopupWindow(context);
         mListPopupWindow.setModal(true);//设置显示模式
         int density = (int) context.getResources().getDisplayMetrics().density;
+        mListPopupWindow.setContentWidth(200 * density);
 
         mListPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 AlbumSpinner.this.onItemSelected(position);
-                
+                if (mOnItemSelectedListener != null) {
+                    mOnItemSelectedListener.onItemSelected(parent, view, position, id);
+                }
             }
         });
     }
@@ -52,6 +55,21 @@ public class AlbumSpinner {
         cursor.moveToPosition(position);
         Album album = Album.valueOf(cursor);
         mSelectedText.setText(album.getDisplayName());
+    }
+
+    /**
+     * 设置选择监听.
+     */
+    public void setOnItemSelectedListener(AdapterView.OnItemSelectedListener listener) {
+        mOnItemSelectedListener = listener;
+    }
+
+    /**
+     * 设置选中某一项.
+     */
+    public void setSelection(int position) {
+        mListPopupWindow.setSelection(position);
+        onItemSelected(position);
     }
 
     /**
