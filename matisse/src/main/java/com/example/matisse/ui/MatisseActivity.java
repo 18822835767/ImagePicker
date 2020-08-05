@@ -3,18 +3,24 @@ package com.example.matisse.ui;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.loader.app.LoaderManager;
+
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.example.matisse.R;
 
-public class MatisseActivity extends AppCompatActivity {
+public class MatisseActivity extends AppCompatActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_matisse);
 
+        setActionBar();
+    }
+    
+    private void setActionBar(){
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
