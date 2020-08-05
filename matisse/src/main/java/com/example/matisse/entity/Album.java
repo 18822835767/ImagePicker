@@ -34,7 +34,7 @@ public class Album implements Serializable {
      * @return 根据当前cursor所在的行，构造出一个Album对象
      */
     public static Album valueOf(Cursor cursor) {
-        String uriPath = cursor.getString(cursor.getColumnIndex(COLUMN_URI);
+        String uriPath = cursor.getString(cursor.getColumnIndex(COLUMN_URI));
                 
         String id = cursor.getString(cursor.getColumnIndex(COLUMN_BUCKET_ID));
         Uri uri = uriPath == null ? null : Uri.parse(uriPath);
