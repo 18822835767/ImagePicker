@@ -42,7 +42,7 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
         }
         
         if(args != null){
-            Album album = (Album) args.getSerializable(ARGS_ALBUM);
+            Album album = (Album) args.getParcelable(ARGS_ALBUM);
             if(album == null){
                 return null;
             }else{
@@ -74,7 +74,7 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
     
     public void load(Album target){
         Bundle args = new Bundle();
-        args.putSerializable(ARGS_ALBUM,target);
+        args.putParcelable(ARGS_ALBUM,target);
         mLoaderManager.initLoader(LOADER_ID,args,this);
         
     }

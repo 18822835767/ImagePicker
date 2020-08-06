@@ -2,6 +2,8 @@ package com.example.matisse.entity;
 
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.io.Serializable;
 
@@ -10,7 +12,7 @@ import static com.example.matisse.util.Constant.AlbumLoaderConstants.COLUMN_BUCK
 import static com.example.matisse.util.Constant.AlbumLoaderConstants.COLUMN_COUNT;
 import static com.example.matisse.util.Constant.AlbumLoaderConstants.COLUMN_URI;
 
-public class Album implements Serializable {
+public class Album implements Parcelable {
     /**
      * "全部"相册的信息.
      */
@@ -28,6 +30,25 @@ public class Album implements Serializable {
         this.displayName = displayName;
         this.count = count;
     }
+
+    private Album(Parcel in) {
+        id = in.readString();
+        coverUri = in.readParcelable(Uri.class.getClassLoader());
+        displayName = in.readString();
+        count = in.readLong();
+    }
+
+    public static final Creator<Album> CREATOR = new Creator<Album>() {
+        @Override
+        public Album createFromParcel(Parcel in) {
+            return new Album(in);
+        }
+
+        @Override
+        public Album[] newArray(int size) {
+            return new Album[size];
+        }
+    };
 
     /**
      * @param cursor 传入一个cursor
@@ -64,5 +85,18 @@ public class Album implements Serializable {
 
     public long getCount() {
         return count;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeParcelable(coverUri,0);
+        dest.writeString(displayName);
+        dest.writeLong(count);
     }
 }

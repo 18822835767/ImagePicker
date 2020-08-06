@@ -34,7 +34,7 @@ public class MediaSelectionFragment extends Fragment implements AlbumMediaCollec
     public static MediaSelectionFragment newInstance(Album album) {
         MediaSelectionFragment fragment = new MediaSelectionFragment();
         Bundle bundle = new Bundle();
-        bundle.putSerializable(EXTRA_ALBUM, album);
+        bundle.putParcelable(EXTRA_ALBUM, album);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -55,7 +55,7 @@ public class MediaSelectionFragment extends Fragment implements AlbumMediaCollec
         super.onActivityCreated(savedInstanceState);
         Album album = null;
         if(getArguments() != null){
-            album = (Album) getArguments().getSerializable(EXTRA_ALBUM);
+            album = (Album) getArguments().getParcelable(EXTRA_ALBUM);
         }
         mAlbumMediaCollection.onCreate(getActivity(),this);
         mAlbumMediaCollection.load(album);
@@ -63,6 +63,12 @@ public class MediaSelectionFragment extends Fragment implements AlbumMediaCollec
 
     @Override
     public void onAlbumMediaLoad(Cursor cursor) {
+        if(cursor.moveToFirst()){
+            for(int i=0;i<10;i++){
+                cursor.moveToPosition(i);
+                Log.d(TAG, "onAlbumMediaLoad: "+cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE)));
+            }
+        }
     }
 
     @Override
