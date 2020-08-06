@@ -8,4 +8,6 @@ public abstract class RequestHandler {
     public abstract boolean canHandleRequest(Request data);
     
     public abstract Bitmap load(Request request) throws IOException;
+    
+    
 }

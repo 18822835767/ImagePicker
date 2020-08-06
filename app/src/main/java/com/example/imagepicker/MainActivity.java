@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.matisse.Matisse;
+import com.example.matisse.engine.impl.PicassoEngine;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -29,6 +30,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        Matisse.from(this).choose().forResult(1);
+        Matisse.from(this).choose().imageEngine(new PicassoEngine()).forResult(1);
     }
 }

@@ -6,22 +6,33 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.Manifest;
+import android.content.ContentUris;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.matisse.R;
+import com.example.matisse.internal.ui.adapter.AlbumsAdapter;
+import com.example.matisse.internal.ui.widget.AlbumSpinner;
 import com.example.matisse.model.AlbumCollection;
 import com.example.matisse.util.PermissionHelper;
 
-public class MatisseActivity extends AppCompatActivity implements AlbumCollection.AlbumCallbacks {
+public class MatisseActivity extends AppCompatActivity implements AlbumCollection.AlbumCallbacks, 
+        AdapterView.OnItemSelectedListener {
 
     private static final int REQUEST_CODE = 0;
     private static final String TAG = "MatisseActivity";
     private AlbumCollection mAlbumCollection = new AlbumCollection();
+    
+    private AlbumSpinner mAlbumSpinner;
+    private AlbumsAdapter mAlbumsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +40,27 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
         setContentView(R.layout.activity_matisse);
 
         setActionBar();
+        initSpinner();
+        requestPermission();
+        
+        
+    }
 
+    private void initAlbumData() {
+        mAlbumCollection.onCreate(this, this);
+        mAlbumCollection.loadAlbums();
+    }
+
+    private void initSpinner(){
+        mAlbumsAdapter = new AlbumsAdapter(this,null,false);
+        mAlbumSpinner = new AlbumSpinner(this);
+        mAlbumSpinner.setOnItemSelectedListener(this);
+        mAlbumSpinner.setSelectedText((TextView) findViewById(R.id.selected_album));
+        mAlbumSpinner.setAnchorView(findViewById(R.id.toolbar));
+        mAlbumSpinner.setAdapter(mAlbumsAdapter);
+    }
+    
+    private void requestPermission(){
         if (!PermissionHelper.permissionAllow(this, new String[]{Manifest.permission.
                 READ_EXTERNAL_STORAGE})) {
             PermissionHelper.requestPermissions(this, new String[]{Manifest.permission.
@@ -38,12 +69,8 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
             initAlbumData();
         }
     }
-
-    private void initAlbumData() {
-        mAlbumCollection.onCreate(this, this);
-        mAlbumCollection.loadAlbums();
-    }
-
+    
+    
     private void setActionBar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -65,14 +92,16 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
     public void onAlbumLoad(Cursor cursor) {
         if (cursor.moveToFirst()) {
             do {
-                Log.d(TAG, "onAlbumLoad: " + cursor.getString(cursor.getColumnIndex("bucket_display_name")));
+                Log.d(TAG, "onAlbumLoad: " + cursor.getString(cursor.getColumnIndex
+                        ("bucket_display_name")) + ": "+cursor.getString(cursor.getColumnIndex("uri")));
             } while (cursor.moveToNext());
         }
+        mAlbumsAdapter.swapCursor(cursor);
     }
 
     @Override
     public void onAlbumReset() {
-
+        mAlbumsAdapter.swapCursor(null);
     }
 
     @Override
@@ -85,5 +114,15 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
                 finish();
             }
         }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }
