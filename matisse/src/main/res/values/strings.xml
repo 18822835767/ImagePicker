@@ -3,4 +3,7 @@
     <string name="preview">预览</string>
     <string name="original">原图</string>
     <string name="apply">确定</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

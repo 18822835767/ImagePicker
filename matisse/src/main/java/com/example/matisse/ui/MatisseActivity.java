@@ -90,12 +90,6 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
 
     @Override
     public void onAlbumLoad(Cursor cursor) {
-        if (cursor.moveToFirst()) {
-            do {
-                Log.d(TAG, "onAlbumLoad: " + cursor.getString(cursor.getColumnIndex
-                        ("bucket_display_name")) + ": "+cursor.getString(cursor.getColumnIndex("uri")));
-            } while (cursor.moveToNext());
-        }
         mAlbumsAdapter.swapCursor(cursor);
     }
 
@@ -124,5 +118,11 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mAlbumCollection.onDestroy();
     }
 }

@@ -35,12 +35,19 @@ public class Album implements Serializable {
      */
     public static Album valueOf(Cursor cursor) {
         String uriPath = cursor.getString(cursor.getColumnIndex(COLUMN_URI));
-                
+
         String id = cursor.getString(cursor.getColumnIndex(COLUMN_BUCKET_ID));
         Uri uri = uriPath == null ? null : Uri.parse(uriPath);
         String displayName = cursor.getString(cursor.getColumnIndex(COLUMN_BUCKET_DISPLAY_NAME));
         long count = cursor.getLong(cursor.getColumnIndex(COLUMN_COUNT));
-        return new Album(id,uri,displayName,count);
+        return new Album(id, uri, displayName, count);
+    }
+
+    /**
+     * 判断是不是总相册.
+     */
+    public boolean isAll() {
+        return ALBUM_ID_ALL.equals(id);
     }
 
     public String getId() {
