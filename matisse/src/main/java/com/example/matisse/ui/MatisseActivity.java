@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
 import android.Manifest;
 import android.content.ContentUris;
@@ -11,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.matisse.R;
+import com.example.matisse.entity.Album;
+import com.example.matisse.internal.ui.MediaSelectionFragment;
 import com.example.matisse.internal.ui.adapter.AlbumsAdapter;
 import com.example.matisse.internal.ui.widget.AlbumSpinner;
 import com.example.matisse.model.AlbumCollection;
@@ -33,6 +37,8 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
     
     private AlbumSpinner mAlbumSpinner;
     private AlbumsAdapter mAlbumsAdapter;
+    
+    private View mContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +46,15 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
         setContentView(R.layout.activity_matisse);
 
         setActionBar();
+        initView();
         initSpinner();
         requestPermission();
-        
-        
     }
 
+    private void initView(){
+        mContainer = findViewById(R.id.container);
+    }
+    
     private void initAlbumData() {
         mAlbumCollection.onCreate(this, this);
         mAlbumCollection.loadAlbums();
@@ -79,6 +88,15 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
         actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
+    private void onAlbumSelected(Album album){
+        mContainer.setVisibility(View.VISIBLE);
+        Fragment fragment = MediaSelectionFragment.newInstance(album);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container,fragment)
+                .commitAllowingStateLoss();
+    }
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -89,8 +107,19 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
     }
 
     @Override
-    public void onAlbumLoad(Cursor cursor) {
+    public void onAlbumLoad(final Cursor cursor) {
         mAlbumsAdapter.swapCursor(cursor);
+
+        Handler handler = new Handler(getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                cursor.moveToPosition(mAlbumCollection.getCurrentSelection());
+                mAlbumSpinner.setSelection(mAlbumCollection.getCurrentSelection());
+                Album album = Album.valueOf(cursor);
+                onAlbumSelected(album);
+            }
+        });
     }
 
     @Override

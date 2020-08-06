@@ -57,18 +57,12 @@ public class MediaSelectionFragment extends Fragment implements AlbumMediaCollec
         if(getArguments() != null){
             album = (Album) getArguments().getSerializable(EXTRA_ALBUM);
         }
+        mAlbumMediaCollection.onCreate(getActivity(),this);
         mAlbumMediaCollection.load(album);
     }
 
     @Override
     public void onAlbumMediaLoad(Cursor cursor) {
-        if(cursor.moveToFirst()){
-            for(int i = 0;i<10;i++){
-                cursor.moveToNext();
-                long size = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE));
-                Log.d(TAG, "onAlbumMediaLoad: "+size);
-            }
-        }
     }
 
     @Override
