@@ -69,4 +69,11 @@ public class MediaSelectionFragment extends Fragment implements AlbumMediaCollec
     public void onAlbumMediaReset() {
 
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: ");
+        mAlbumMediaCollection.onDestroy();
+    }
 }

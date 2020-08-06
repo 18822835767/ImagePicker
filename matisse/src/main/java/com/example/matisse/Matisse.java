@@ -1,6 +1,8 @@
 package com.example.matisse;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.ContextWrapper;
 
 import java.lang.ref.WeakReference;
 
