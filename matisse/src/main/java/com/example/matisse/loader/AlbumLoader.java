@@ -245,6 +245,6 @@ public class AlbumLoader extends CursorLoader {
      * 判断版本是否在Android 10 之前
      */
     private static boolean beforeAndroidTen() {
-        return Build.VERSION.SDK_INT > Build.VERSION_CODES.Q;
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.Q;
     }
 }

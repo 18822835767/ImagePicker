@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.util.Size;
 
@@ -34,33 +35,42 @@ public class MediaStoreRequestHandler extends RequestHandler {
     @Override
     public Bitmap load(Request request) throws IOException {
         ContentResolver contentResolver = context.getContentResolver();
-        
-        PicassoKind picassoKind = getPicassoKind(request.targetWidth,request.targetHeight);
+
+        if (!beforeAndroidTen()) {
+            return contentResolver.loadThumbnail(request.uri, new Size(request.targetWidth,
+                    request.targetHeight), null);
+        }
+
+        PicassoKind picassoKind = getPicassoKind(request.targetWidth, request.targetHeight);
         long id = ContentUris.parseId(request.uri);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        calculateInSampleSize(request.targetWidth,request.targetHeight,picassoKind.width,
-                picassoKind.height,options);
-        
-        return MediaStore.Images.Thumbnails.getThumbnail(contentResolver,id,picassoKind.androidKind,
+        calculateInSampleSize(request.targetWidth, request.targetHeight, picassoKind.width,
+                picassoKind.height, options);
+
+        return MediaStore.Images.Thumbnails.getThumbnail(contentResolver, id, picassoKind.androidKind,
                 options);
-//        //加载图片
-//       return contentResolver.loadThumbnail(request.uri,new Size(request.targetWidth,
-//                request.targetHeight),null);
     }
-    
-    static PicassoKind getPicassoKind(int targetWidth,int targetHeight){
-        if(targetWidth <= MICRO.width && targetHeight <= MICRO.height){
+
+    static PicassoKind getPicassoKind(int targetWidth, int targetHeight) {
+        if (targetWidth <= MICRO.width && targetHeight <= MICRO.height) {
             return MICRO;
-        }else{
+        } else {
             return MINI;
         }
     }
-    
-    enum PicassoKind{
-        MICRO(MICRO_KIND,96,96),
-        MINI(MINI_KIND,512,384);
-        
+
+    /**
+     * 判断版本是否在Android 10 之前
+     */
+    private static boolean beforeAndroidTen() {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.Q;
+    }
+
+    enum PicassoKind {
+        MICRO(MICRO_KIND, 96, 96),
+        MINI(MINI_KIND, 512, 384);
+
         final int androidKind;
         final int width;
         final int height;
