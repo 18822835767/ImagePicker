@@ -7,6 +7,8 @@ import android.provider.MediaStore;
 
 import java.io.Serializable;
 
+import androidx.annotation.Nullable;
+
 public class Item implements Serializable {
     private long id;
     private Uri uri;
@@ -26,5 +28,19 @@ public class Item implements Serializable {
 
     public Uri getUri() {
         return uri;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if(!(obj instanceof Item)){
+            return false;
+        }
+        
+        Item item = (Item) obj;
+        
+        return id == item.id 
+                && (uri != null && uri.equals(item.uri))
+                    || (uri == null && item.uri == null)
+                && size == item.size;
     }
 }
