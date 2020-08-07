@@ -126,7 +126,7 @@ public class AlbumMediaAdapter extends RecyclerViewCursorAdapter<RecyclerView.Vi
             //之前被选中
             if(index > 0){
                 mSelectedItemCollection.remove(item);
-                checkView.setEnable(true);
+                checkView.setEnabled(true);
                 checkView.setCheckedNum(CheckView.UNCHECKED);
             //之前没有被选中
             }else{
@@ -138,7 +138,7 @@ public class AlbumMediaAdapter extends RecyclerViewCursorAdapter<RecyclerView.Vi
                 //可选的情况下
                 }else{
                     mSelectedItemCollection.add(item);
-                    checkView.setEnable(true);
+                    checkView.setEnabled(true);
                     checkView.setCheckedNum(mSelectedItemCollection.checkNumOf(item));
                 }
             }
@@ -148,7 +148,7 @@ public class AlbumMediaAdapter extends RecyclerViewCursorAdapter<RecyclerView.Vi
             //如果之前被选中
             if(selected){
                 mSelectedItemCollection.remove(item);
-                checkView.setEnable(true);
+                checkView.setEnabled(true);
                 checkView.setChecked(true);
             //如果之前没有被选中
             }else{
@@ -160,7 +160,7 @@ public class AlbumMediaAdapter extends RecyclerViewCursorAdapter<RecyclerView.Vi
                 //可选的情况下
                 }else{
                     mSelectedItemCollection.add(item);
-                    checkView.setEnable(true);
+                    checkView.setEnabled(true);
                     checkView.setChecked(true);
                 }
             }

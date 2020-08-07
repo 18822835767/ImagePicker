@@ -137,7 +137,8 @@ public class CheckView extends View {
         invalidate();
     }
 
-    public void setEnable(boolean enabled) {
+    @Override
+    public void setEnabled(boolean enabled) {
         if (mEnabled != enabled) {
             mEnabled = enabled;
             //重新绘制
