@@ -26,18 +26,19 @@ import com.example.matisse.internal.ui.MediaSelectionFragment;
 import com.example.matisse.internal.ui.adapter.AlbumsAdapter;
 import com.example.matisse.internal.ui.widget.AlbumSpinner;
 import com.example.matisse.model.AlbumCollection;
+import com.example.matisse.model.SelectedItemCollection;
 import com.example.matisse.util.PermissionHelper;
 
-public class MatisseActivity extends AppCompatActivity implements AlbumCollection.AlbumCallbacks, 
+public class MatisseActivity extends AppCompatActivity implements AlbumCollection.AlbumCallbacks,
         AdapterView.OnItemSelectedListener {
 
     private static final int REQUEST_CODE = 0;
     private static final String TAG = "MatisseActivity";
     private AlbumCollection mAlbumCollection = new AlbumCollection();
-    
+
     private AlbumSpinner mAlbumSpinner;
     private AlbumsAdapter mAlbumsAdapter;
-    
+
     private View mContainer;
 
     @Override
@@ -46,30 +47,34 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
         setContentView(R.layout.activity_matisse);
 
         setActionBar();
+
+        //重置SelectedItemCollection的值.
+        SelectedItemCollection.getInstance().reset();
+
         initView();
         initSpinner();
         requestPermission();
     }
 
-    private void initView(){
+    private void initView() {
         mContainer = findViewById(R.id.container);
     }
-    
+
     private void initAlbumData() {
         mAlbumCollection.onCreate(this, this);
         mAlbumCollection.loadAlbums();
     }
 
-    private void initSpinner(){
-        mAlbumsAdapter = new AlbumsAdapter(this,null,false);
+    private void initSpinner() {
+        mAlbumsAdapter = new AlbumsAdapter(this, null, false);
         mAlbumSpinner = new AlbumSpinner(this);
         mAlbumSpinner.setOnItemSelectedListener(this);
         mAlbumSpinner.setSelectedText((TextView) findViewById(R.id.selected_album));
         mAlbumSpinner.setAnchorView(findViewById(R.id.toolbar));
         mAlbumSpinner.setAdapter(mAlbumsAdapter);
     }
-    
-    private void requestPermission(){
+
+    private void requestPermission() {
         if (!PermissionHelper.permissionAllow(this, new String[]{Manifest.permission.
                 READ_EXTERNAL_STORAGE})) {
             PermissionHelper.requestPermissions(this, new String[]{Manifest.permission.
@@ -78,8 +83,8 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
             initAlbumData();
         }
     }
-    
-    
+
+
     private void setActionBar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -88,15 +93,15 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
         actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
-    private void onAlbumSelected(Album album){
+    private void onAlbumSelected(Album album) {
         mContainer.setVisibility(View.VISIBLE);
         Fragment fragment = MediaSelectionFragment.newInstance(album);
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.container,fragment)
+                .replace(R.id.container, fragment)
                 .commitAllowingStateLoss();
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {

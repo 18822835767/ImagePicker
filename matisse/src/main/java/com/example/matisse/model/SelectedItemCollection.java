@@ -21,7 +21,7 @@ public class SelectedItemCollection {
     private SelectedItemCollection() {
     }
 
-    public SelectedItemCollection getInstance() {
+    public static SelectedItemCollection getInstance() {
         return SelectedItemCollectionInner.instance;
     }
 
@@ -49,6 +49,10 @@ public class SelectedItemCollection {
         return index == -1 ? UNCHECKED : index + 1;
     }
 
+    public void reset(){
+        mItems.clear();
+    }
+    
     private static class SelectedItemCollectionInner {
         private static SelectedItemCollection instance = new SelectedItemCollection();
     }

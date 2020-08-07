@@ -21,46 +21,66 @@ public class MediaGrid extends SquareFrameLayout {
 
     private PreBindInfo mPreBindInfo;
     private Item mMedia;
-    
+
     public MediaGrid(@NonNull Context context) {
         super(context);
         init(context);
     }
 
     public MediaGrid(Context context, AttributeSet attrs) {
-        super(context,attrs);
+        super(context, attrs);
         init(context);
     }
 
     private void init(Context context) {
         //由于该布局的根标签是merge，所以需要制定MediaGrid为父节点。
         LayoutInflater.from(context).inflate(R.layout.media_grid_content, this, true);
-    
+
         mThumbnail = findViewById(R.id.media_thumbnail);
         mCheckView = findViewById(R.id.check_view);
     }
-    
-    public void preBindMedia(PreBindInfo preBindInfo){
+
+    public void preBindMedia(PreBindInfo preBindInfo) {
         mPreBindInfo = preBindInfo;
     }
-    
-    public void bindMedia(Item item){
+
+    public void bindMedia(Item item) {
         mMedia = item;
         setImage();
+        initCheckView();
     }
-    
-    private void setImage(){
-        SelectionSpec.getInstance().imageEngine.loadThumbnail(getContext(),mPreBindInfo.mResize,
-                mPreBindInfo.mPlaceholder, mThumbnail,mMedia.getUri());
+
+    private void initCheckView(){
+        mCheckView.setCountable(mPreBindInfo.mCheckViewCountable);
     }
-    
-    public static class PreBindInfo{
+
+    public void setCheckEnabled(boolean enabled) {
+        mCheckView.setEnabled(enabled);
+    }
+
+    public void setCheckedNum(int checkedNum) {
+        mCheckView.setCheckedNum(checkedNum);
+    }
+
+    public void setChecked(boolean checked) {
+        mCheckView.setChecked(checked);
+    }
+
+
+    private void setImage() {
+        SelectionSpec.getInstance().imageEngine.loadThumbnail(getContext(), mPreBindInfo.mResize,
+                mPreBindInfo.mPlaceholder, mThumbnail, mMedia.getUri());
+    }
+
+    public static class PreBindInfo {
         int mResize;
         Drawable mPlaceholder;
+        boolean mCheckViewCountable;
 
-        public PreBindInfo(int resize, Drawable placeholder) {
+        public PreBindInfo(int resize, Drawable placeholder, boolean checkViewCountable) {
             mResize = resize;
             mPlaceholder = placeholder;
+            mCheckViewCountable = checkViewCountable;
         }
     }
 }
