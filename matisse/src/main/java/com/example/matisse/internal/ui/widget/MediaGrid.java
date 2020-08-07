@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.example.matisse.R;
@@ -14,13 +15,14 @@ import java.util.jar.Attributes;
 
 import androidx.annotation.NonNull;
 
-public class MediaGrid extends SquareFrameLayout {
+public class MediaGrid extends SquareFrameLayout implements View.OnClickListener{
 
     private ImageView mThumbnail;
     private CheckView mCheckView;
 
     private PreBindInfo mPreBindInfo;
     private Item mMedia;
+    private OnMediaGridClickListener mListener;
 
     public MediaGrid(@NonNull Context context) {
         super(context);
@@ -38,6 +40,8 @@ public class MediaGrid extends SquareFrameLayout {
 
         mThumbnail = findViewById(R.id.media_thumbnail);
         mCheckView = findViewById(R.id.check_view);
+        
+        mCheckView.setOnClickListener(this);
     }
 
     public void preBindMedia(PreBindInfo preBindInfo) {
@@ -72,6 +76,17 @@ public class MediaGrid extends SquareFrameLayout {
                 mPreBindInfo.mPlaceholder, mThumbnail, mMedia.getUri());
     }
 
+    @Override
+    public void onClick(View v) {
+        if(mListener != null){
+            mListener.onCheckViewClicked(mCheckView,mMedia);
+        }
+    }
+
+    public void setOnMediaGridClickListener(OnMediaGridClickListener listener) {
+        mListener = listener;
+    }
+
     public static class PreBindInfo {
         int mResize;
         Drawable mPlaceholder;
@@ -82,5 +97,9 @@ public class MediaGrid extends SquareFrameLayout {
             mPlaceholder = placeholder;
             mCheckViewCountable = checkViewCountable;
         }
+    }
+    
+    public interface OnMediaGridClickListener{
+        void onCheckViewClicked(CheckView checkView,Item item);
     }
 }

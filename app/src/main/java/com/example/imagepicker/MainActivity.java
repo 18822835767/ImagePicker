@@ -30,6 +30,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        Matisse.from(this).choose().imageEngine(new PicassoEngine()).forResult(1);
+        Matisse.from(this).choose()
+                .imageEngine(new PicassoEngine())
+                .countable(true)
+                .maxSelectable(9)
+                .forResult(1);
     }
 }

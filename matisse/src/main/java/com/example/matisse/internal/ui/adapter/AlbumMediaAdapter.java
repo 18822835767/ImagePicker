@@ -6,10 +6,12 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.matisse.R;
 import com.example.matisse.entity.Item;
 import com.example.matisse.internal.entity.SelectionSpec;
+import com.example.matisse.internal.ui.widget.CheckView;
 import com.example.matisse.internal.ui.widget.MediaGrid;
 import com.example.matisse.model.SelectedItemCollection;
 
@@ -17,7 +19,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class AlbumMediaAdapter extends RecyclerViewCursorAdapter<RecyclerView.ViewHolder> {
+public class AlbumMediaAdapter extends RecyclerViewCursorAdapter<RecyclerView.ViewHolder> 
+        implements MediaGrid.OnMediaGridClickListener {
 
     private static final String TAG = "AlbumMediaAdapter";
     private Drawable mPlaceholder;
@@ -25,10 +28,12 @@ public class AlbumMediaAdapter extends RecyclerViewCursorAdapter<RecyclerView.Vi
     private int mImageResize;
     private SelectionSpec mSelectionSpec;
     private SelectedItemCollection mSelectedItemCollection;
+    private Context mContext;
 
     public AlbumMediaAdapter(Context context, RecyclerView recyclerView) {
         super(null);
 
+        mContext = context;
         mSelectionSpec = SelectionSpec.getInstance();
         mSelectedItemCollection = SelectedItemCollection.getInstance();
         mPlaceholder = context.getDrawable(R.drawable.mediagrid_item_placeholder);
@@ -54,6 +59,7 @@ public class AlbumMediaAdapter extends RecyclerViewCursorAdapter<RecyclerView.Vi
                 SelectionSpec.getInstance().countable));
 
         mediaViewHolder.mMediaGrid.bindMedia(item);
+        mediaViewHolder.mMediaGrid.setOnMediaGridClickListener(this);
         setCheckStatus(item,mediaViewHolder.mMediaGrid);
     }
 
@@ -113,6 +119,55 @@ public class AlbumMediaAdapter extends RecyclerViewCursorAdapter<RecyclerView.Vi
         }
     }
 
+    private void updateSelectedItem(CheckView checkView,Item item){
+        //多选情况下
+        if(mSelectionSpec.countable){
+            int index = mSelectedItemCollection.checkNumOf(item);
+            //之前被选中
+            if(index > 0){
+                mSelectedItemCollection.remove(item);
+                checkView.setEnable(true);
+                checkView.setCheckedNum(CheckView.UNCHECKED);
+            //之前没有被选中
+            }else{
+                //不可选的情况下
+                if(!checkView.isEnabled()){
+                    Toast.makeText(mContext,"亲，最多选中"+mSelectionSpec.maxSelectable+"张图片",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                //可选的情况下
+                }else{
+                    mSelectedItemCollection.add(item);
+                    checkView.setEnable(true);
+                    checkView.setCheckedNum(mSelectedItemCollection.checkNumOf(item));
+                }
+            }
+        //单选情况下
+        }else{
+            boolean selected = mSelectedItemCollection.isSelected(item);
+            //如果之前被选中
+            if(selected){
+                mSelectedItemCollection.remove(item);
+                checkView.setEnable(true);
+                checkView.setChecked(true);
+            //如果之前没有被选中
+            }else{
+                //不可选的情况下 
+                if(!checkView.isEnabled()){
+                    Toast.makeText(mContext,"亲，最多选中"+mSelectionSpec.maxSelectable+"张图片",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                //可选的情况下
+                }else{
+                    mSelectedItemCollection.add(item);
+                    checkView.setEnable(true);
+                    checkView.setChecked(true);
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
+    
     private int getImageResize(Context context) {
         if (mImageResize == 0) {
             RecyclerView.LayoutManager lm = mRecyclerView.getLayoutManager();
@@ -123,6 +178,11 @@ public class AlbumMediaAdapter extends RecyclerViewCursorAdapter<RecyclerView.Vi
             mImageResize = availableWidth / spanCount;
         }
         return mImageResize;
+    }
+
+    @Override
+    public void onCheckViewClicked(CheckView checkView, Item item) {
+        updateSelectedItem(checkView,item);
     }
 
     private static class MediaViewHolder extends RecyclerView.ViewHolder {

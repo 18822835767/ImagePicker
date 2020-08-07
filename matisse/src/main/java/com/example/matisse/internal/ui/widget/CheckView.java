@@ -146,6 +146,11 @@ public class CheckView extends View {
     }
 
     @Override
+    public boolean isEnabled() {
+        return mEnabled;
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
