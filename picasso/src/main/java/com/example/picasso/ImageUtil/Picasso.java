@@ -25,6 +25,10 @@ public class Picasso {
     private Dispatcher dispatcher;
     private List<RequestHandler> requestHandlers;
     private Context context;
+
+    /**
+     * 这里的Object实际上是ImageView.
+     */
     private Map<Object, ImageViewAction> targetToAction;
 
     private static final Handler HANDLER = new Handler(Looper.getMainLooper()) {
@@ -88,7 +92,7 @@ public class Picasso {
         //如果该target之前的加载任务和当前需要加载的任务不相同，那么重新加载.
         if (!oldAction.getKey().equals(action.getKey())) {
             targetToAction.remove(target);
-            dispatcher.dispatchCancel(action);
+            dispatcher.dispatchCancel(oldAction);
             targetToAction.put(target, action);
             dispatcher.dispatchSubmit(action);
         }

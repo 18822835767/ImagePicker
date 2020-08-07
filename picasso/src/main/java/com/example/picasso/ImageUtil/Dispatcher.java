@@ -26,14 +26,18 @@ class Dispatcher {
     static final int HUNTER_BATCH_COMPLETE = 8;
 
     private static final int BATCH_DELAY = 200; // ms
-    
+
     private Context context;
     private HandlerThread dispatcherThread;
     private ExecutorService service;
     private Handler handler;
     private Handler mainThreadHandler;
-    private Map<String,BitmapHunter> hunterMap;
     private List<BitmapHunter> batch;
+
+    /**
+     * 这里的是String存储的是图片标识(例如图片的uri).
+     */
+    private Map<String, BitmapHunter> hunterMap;
 
     Dispatcher(Context context, ExecutorService service, Handler mainThreadHandler) {
         this.dispatcherThread = new HandlerThread(HANDLER_THREAD_NAME);
@@ -41,7 +45,7 @@ class Dispatcher {
         this.context = context;
         this.service = service;
         this.hunterMap = new LinkedHashMap<>();
-        this.handler = new DispatcherHandler(dispatcherThread.getLooper(),this);
+        this.handler = new DispatcherHandler(dispatcherThread.getLooper(), this);
         this.mainThreadHandler = mainThreadHandler;
         this.batch = new ArrayList<>(4);
     }
@@ -49,9 +53,9 @@ class Dispatcher {
     void dispatchSubmit(ImageViewAction action) {
         handler.sendMessage(handler.obtainMessage(REQUEST_SUBMIT, action));
     }
-    
-    void dispatchCancel(ImageViewAction action){
-        handler.sendMessage(handler.obtainMessage(REQUEST_CANCEL,action));
+
+    void dispatchCancel(ImageViewAction action) {
+        handler.sendMessage(handler.obtainMessage(REQUEST_CANCEL, action));
     }
 
     void dispatchFailed(BitmapHunter hunter) {
@@ -67,64 +71,64 @@ class Dispatcher {
         batch.clear();
         mainThreadHandler.sendMessage(mainThreadHandler.obtainMessage(HUNTER_BATCH_COMPLETE, copy));
     }
-    
-    private void performSubmit(ImageViewAction action){
+
+    private void performSubmit(ImageViewAction action) {
         //如果线程池已经关闭,直接return
-        if(service.isShutdown()){
+        if (service.isShutdown()) {
             return;
         }
-        
-        BitmapHunter hunter = BitmapHunter.forRequest(action.getPicasso(),this,action);
-        if(hunter != null){
+
+        BitmapHunter hunter = BitmapHunter.forRequest(action.getPicasso(), this, action);
+        if (hunter != null) {
             //提交任务
             service.execute(hunter);
         }
-        hunterMap.put(action.getKey(),hunter);
+        hunterMap.put(action.getKey(), hunter);
     }
 
-    private void performError(BitmapHunter hunter){
+    private void performError(BitmapHunter hunter) {
         hunterMap.remove(hunter.getKey());
         batch(hunter);
     }
-    
+
     private void performComplete(BitmapHunter hunter) {
         hunterMap.remove(hunter.getKey());
         batch(hunter);
     }
-    
-    private void performCancel(ImageViewAction action){
+
+    private void performCancel(ImageViewAction action) {
         String key = action.getKey();
         BitmapHunter hunter = hunterMap.get(key);
-        
-        if(hunter != null){
+
+        if (hunter != null) {
             //移除对应的任务
-            ((ThreadPoolExecutor)service).remove(hunter);
+            ((ThreadPoolExecutor) service).remove(hunter);
             hunterMap.remove(key);
         }
     }
-    
+
     /**
      * 更新UI时，进行批处理操作.
-     * */
-    private void batch(BitmapHunter hunter){
+     */
+    private void batch(BitmapHunter hunter) {
         batch.add(hunter);
         if (!handler.hasMessages(HUNTER_DELAY_NEXT_BATCH)) {
             handler.sendEmptyMessageDelayed(HUNTER_DELAY_NEXT_BATCH, BATCH_DELAY);
         }
-        
+
     }
-    
-    private static class DispatcherHandler extends Handler{
+
+    private static class DispatcherHandler extends Handler {
         private Dispatcher dispatcher;
-        
-        DispatcherHandler(Looper looper,Dispatcher dispatcher){
+
+        DispatcherHandler(Looper looper, Dispatcher dispatcher) {
             super(looper);
             this.dispatcher = dispatcher;
         }
-        
+
         @Override
         public void handleMessage(@NonNull Message msg) {
-            switch (msg.what){
+            switch (msg.what) {
                 case REQUEST_SUBMIT: {
                     ImageViewAction action = (ImageViewAction) msg.obj;
                     dispatcher.performSubmit(action);
