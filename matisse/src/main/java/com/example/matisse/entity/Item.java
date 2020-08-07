@@ -43,4 +43,14 @@ public class Item implements Serializable {
                     || (uri == null && item.uri == null)
                 && size == item.size;
     }
+
+    @Override
+    public int hashCode() {
+        int result = 1;
+        result = result * 31 + Long.valueOf(id).hashCode();
+        result = result * 31 + (uri == null ? 0 : uri.hashCode());
+        result = result * 31 + Long.valueOf(size).hashCode();
+        return result;
+    }
+
 }
