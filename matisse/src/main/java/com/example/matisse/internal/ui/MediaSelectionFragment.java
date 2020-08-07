@@ -72,12 +72,6 @@ public class MediaSelectionFragment extends Fragment implements AlbumMediaCollec
 
     @Override
     public void onAlbumMediaLoad(Cursor cursor) {
-        if(cursor.moveToFirst()){
-            for(int i=0;i<10;i++){
-                cursor.moveToPosition(i);
-                Log.d(TAG, "onAlbumMediaLoad: "+cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE)));
-            }
-        }
         mAdapter.swapCursor(cursor);
     }
 
