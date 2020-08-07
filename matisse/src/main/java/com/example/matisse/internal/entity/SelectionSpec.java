@@ -10,7 +10,7 @@ public class SelectionSpec {
     public boolean countable;
     public int maxSelectable;
     public ImageEngine imageEngine;
-
+    
     private SelectionSpec() {
     }
 
