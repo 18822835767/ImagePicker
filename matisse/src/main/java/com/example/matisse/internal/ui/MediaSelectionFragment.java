@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.provider.MediaStore;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 
 import com.example.matisse.R;
 import com.example.matisse.entity.Album;
+import com.example.matisse.internal.ui.adapter.AlbumMediaAdapter;
 import com.example.matisse.model.AlbumMediaCollection;
 
 public class MediaSelectionFragment extends Fragment implements AlbumMediaCollection.AlbumMediaCallbacks {
@@ -26,6 +28,8 @@ public class MediaSelectionFragment extends Fragment implements AlbumMediaCollec
 
     private RecyclerView mRecyclerView;
     private AlbumMediaCollection mAlbumMediaCollection = new AlbumMediaCollection();
+    private AlbumMediaAdapter mAdapter;
+    
     
     
     /**
@@ -57,6 +61,11 @@ public class MediaSelectionFragment extends Fragment implements AlbumMediaCollec
         if(getArguments() != null){
             album = (Album) getArguments().getParcelable(EXTRA_ALBUM);
         }
+        
+        mAdapter = new AlbumMediaAdapter(getContext(),mRecyclerView);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(),3));
+        mRecyclerView.setAdapter(mAdapter);
+        
         mAlbumMediaCollection.onCreate(getActivity(),this);
         mAlbumMediaCollection.load(album);
     }
@@ -69,11 +78,12 @@ public class MediaSelectionFragment extends Fragment implements AlbumMediaCollec
                 Log.d(TAG, "onAlbumMediaLoad: "+cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE)));
             }
         }
+        mAdapter.swapCursor(cursor);
     }
 
     @Override
     public void onAlbumMediaReset() {
-
+        mAdapter.swapCursor(null);
     }
 
     @Override

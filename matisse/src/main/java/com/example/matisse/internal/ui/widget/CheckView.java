@@ -11,6 +11,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.print.PrinterId;
 import android.text.TextPaint;
+import android.util.AttributeSet;
 import android.view.View;
 
 import com.example.matisse.R;
@@ -86,6 +87,16 @@ public class CheckView extends View {
         init(context);
     }
 
+    public CheckView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
+    }
+
+    public CheckView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(context);
+    }
+    
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         //设置为固定的大小
