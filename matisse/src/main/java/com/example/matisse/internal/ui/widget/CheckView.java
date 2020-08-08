@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.print.PrinterId;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.example.matisse.R;

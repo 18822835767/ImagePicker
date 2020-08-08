@@ -3,6 +3,7 @@ package com.example.matisse.internal.ui;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.matisse.entity.Item;
 import com.example.matisse.internal.ui.adapter.PreviewPagerAdapter;
@@ -22,5 +23,11 @@ public class SelectedPreviewActivity extends BasePreviewActivity {
         List<Item> items = getIntent().getParcelableArrayListExtra(SELECTED_ITEMS);
         adapter.addAll(items);
         adapter.notifyDataSetChanged();
+
+        if (mSpec.countable) {
+            mCheckView.setCheckedNum(1);
+        } else {
+            mCheckView.setChecked(true);
+        }
     }
 }
