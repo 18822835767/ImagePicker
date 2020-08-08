@@ -18,10 +18,11 @@ import com.example.matisse.model.SelectedItemCollection;
 /**
  * 预览界面的父类.
  */
-public abstract class BasePreviewActivity extends AppCompatActivity implements View.OnClickListener {
+public abstract class BasePreviewActivity extends AppCompatActivity implements View.OnClickListener,
+        ViewPager.OnPageChangeListener {
 
     public static final String SELECTED_ITEMS = "selection_items";
-    
+
     protected ViewPager mPager;
     protected TextView mButtonBack;
     protected TextView mButtonApply;
@@ -29,28 +30,28 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
 
     protected SelectionSpec mSpec;
     protected SelectedItemCollection mSelectedItemCollection;
-    
+
     protected PreviewPagerAdapter mAdapter;
-    
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base_preview);
-    
+
         initView();
         initData();
         initEvent();
     }
-    
-    private void initView(){
+
+    private void initView() {
         mPager = findViewById(R.id.pager);
         mButtonBack = findViewById(R.id.button_back);
         mButtonApply = findViewById(R.id.button_apply);
         mCheckView = findViewById(R.id.check_view);
     }
-    
-    private void initData(){
+
+    private void initData() {
         mSpec = SelectionSpec.getInstance();
         mSelectedItemCollection = SelectedItemCollection.getInstance();
         mAdapter = new PreviewPagerAdapter(getSupportFragmentManager());
@@ -58,42 +59,97 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
         mCheckView.setCountable(mSpec.countable);
     }
 
-    private void initEvent(){
+    private void initEvent() {
         mCheckView.setOnClickListener(this);
+        mPager.addOnPageChangeListener(this);
     }
-    
+
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.check_view){
-            Item item = mAdapter.getMediaItem(mPager.getCurrentItem()); 
+        if (v.getId() == R.id.check_view) {
+            Item item = mAdapter.getMediaItem(mPager.getCurrentItem());
             //如果当前预览的Item是一个选中的状态
-            if(mSelectedItemCollection.isSelected(item)){
+            if (mSelectedItemCollection.isSelected(item)) {
                 mSelectedItemCollection.remove(item);//将该Item从选中列表中移除
                 //如果是多选
-                if(mSpec.countable){
+                if (mSpec.countable) {
                     mCheckView.setCheckedNum(CheckView.UNCHECKED);
-                //如果是单选
-                }else{
+                    //如果是单选
+                } else {
                     mCheckView.setChecked(false);
                 }
-            //如果当前预览的Item没有被选中
-            }else{
+                //如果当前预览的Item没有被选中
+            } else {
                 //可选择的Item到达最大数量，那么该item不被选中
-                if(mSelectedItemCollection.maxSelectableReached()){
-                    Toast.makeText(this,"亲，最多选中"+mSpec.maxSelectable+"张图片",
+                if (mSelectedItemCollection.maxSelectableReached()) {
+                    Toast.makeText(this, "亲，最多选中" + mSpec.maxSelectable + "张图片",
                             Toast.LENGTH_SHORT).show();
-                 //可选择的Item未到达最大数量，那么该item被选中
-                }else {
+                    //可选择的Item未到达最大数量，那么该item被选中
+                } else {
                     mSelectedItemCollection.add(item);
                     //多选下，被选中
-                    if(mSpec.countable){
+                    if (mSpec.countable) {
                         mCheckView.setCheckedNum(mSelectedItemCollection.checkNumOf(item));
-                    //单选下，被选中
-                    }else{
+                        //单选下，被选中
+                    } else {
                         mCheckView.setCountable(true);
                     }
                 }
             }
         }
+    }
+
+    /**
+     * 当滚动ViewPager时，更新顶部CheckView的状态.
+     */
+    @Override
+    public void onPageSelected(int position) {
+        Item item = mAdapter.getMediaItem(position);
+        //如果当前是多选
+        if(mSpec.countable){
+            int checkNum = mSelectedItemCollection.checkNumOf(item);
+            //被选中了
+            if(checkNum > 0){
+                mCheckView.setCheckedNum(checkNum);
+                mCheckView.setEnabled(true);
+            //未被选中
+            }else{
+                mCheckView.setCheckedNum(checkNum);
+                //到达最大数量，不可被选中
+                if(mSelectedItemCollection.maxSelectableReached()){
+                    mCheckView.setEnabled(false);
+                //未到达最大数量，仍有机会被选中
+                }else{
+                    mCheckView.setEnabled(true);
+                }
+            }
+        //如果当前是单选
+        }else{
+            boolean selected = mSelectedItemCollection.isSelected(item);
+            //如果被选中
+            if(selected){
+                mCheckView.setChecked(true);
+                mCheckView.setEnabled(true);
+            //如果未被选中
+            }else {
+                mCheckView.setChecked(false);
+                //到达最大数量了，不可选中
+                if(mSelectedItemCollection.maxSelectableReached()){
+                    mCheckView.setEnabled(false);
+                //仍然有机会被选中
+                }else{
+                    mCheckView.setEnabled(true);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
+
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
     }
 }
