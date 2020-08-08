@@ -23,7 +23,7 @@ public class PreviewItemFragment extends Fragment {
 
     private static final String ARGS_ITEM = "args_item";
 
-    public PreviewItemFragment newInstance(Item item) {
+    public static PreviewItemFragment newInstance(Item item) {
         PreviewItemFragment fragment = new PreviewItemFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARGS_ITEM, item);

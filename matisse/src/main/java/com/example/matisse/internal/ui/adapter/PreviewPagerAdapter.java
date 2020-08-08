@@ -1,6 +1,7 @@
 package com.example.matisse.internal.ui.adapter;
 
 import com.example.matisse.entity.Item;
+import com.example.matisse.internal.ui.PreviewItemFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +22,15 @@ public class PreviewPagerAdapter extends FragmentPagerAdapter {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        return null;
+        return PreviewItemFragment.newInstance(mItems.get(position));
     }
 
     @Override
     public int getCount() {
-        return 0;
+        return mItems.size();
+    }
+    
+    public void addAll(List<Item> items){
+        mItems.addAll(items);
     }
 }
