@@ -35,7 +35,14 @@ public class MediaStoreRequestHandler extends RequestHandler {
     @Override
     public Bitmap load(Request request) throws IOException {
         ContentResolver contentResolver = context.getContentResolver();
-
+        
+        //直接加载大图
+        if(!request.resize){
+            return MediaStore.Images.Media.getBitmap(contentResolver,request.uri);
+        }
+        
+        //加载缩略图
+        
         if (!beforeAndroidTen()) {
             return contentResolver.loadThumbnail(request.uri, new Size(request.targetWidth,
                     request.targetHeight), null);

@@ -35,10 +35,10 @@ public class RequestCreator {
 
     public void into(ImageView imageView) {
         //设置tag标志.
-        imageView.setTag(data.uri);
+        imageView.setTag(createKey(data));
 
         Request request = data.build();
-        String requestKey = data.uri.toString();
+        String requestKey = createKey(data);
 
         Bitmap bitmap = ImageMemoryCache.getBitmapFromMemoryCache(requestKey);
         if (bitmap != null) {
@@ -53,5 +53,9 @@ public class RequestCreator {
         ImageViewAction action = new ImageViewAction(picasso, imageView, request, errorResId, requestKey);
 
         picasso.enqueueAndSubmit(action);
+    }
+    
+    private static String createKey(Request.Builder data){
+        return data.uri.toString() + data.resize;
     }
 }

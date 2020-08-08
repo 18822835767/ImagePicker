@@ -108,12 +108,9 @@ public class Picasso {
         targetToAction.remove(action.getTarget());
         ImageView imageView = action.getTarget();
         Bitmap result = hunter.getResult();
-        Uri nowUri = null;
-        if (imageView.getTag() instanceof Uri) {
-            nowUri = (Uri) imageView.getTag();
-        }
+        String nowUri = (String) imageView.getTag();
 
-        if (nowUri != null && nowUri.toString().equals(hunter.getKey())) {
+        if (nowUri != null && nowUri.equals(hunter.getKey())) {
             if (result != null) {
                 imageView.setImageBitmap(result);
             } else {
