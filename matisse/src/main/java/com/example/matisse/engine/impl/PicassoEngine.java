@@ -15,4 +15,9 @@ public class PicassoEngine implements ImageEngine {
                 .resize(resize,resize)
                 .into(imageView);
     }
+
+    @Override
+    public void loadImage(Context context, ImageView imageView, Uri uri) {
+        Picasso.get(context).load(uri).into(imageView);
+    }
 }

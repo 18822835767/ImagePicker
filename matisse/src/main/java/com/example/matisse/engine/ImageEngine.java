@@ -10,4 +10,9 @@ public interface ImageEngine {
      * 加载缩略图.
      */
     void loadThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, Uri uri);
+
+    /**
+     * 加载完整的图.
+     * */
+    void loadImage(Context context, ImageView imageView, Uri uri);
 }
