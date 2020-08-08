@@ -10,6 +10,7 @@ import com.example.matisse.entity.Item;
 import com.example.matisse.internal.ui.adapter.PreviewPagerAdapter;
 import com.example.matisse.model.AlbumCollection;
 import com.example.matisse.model.AlbumMediaCollection;
+import com.example.matisse.model.SelectedItemCollection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,8 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
      */
     private AlbumMediaCollection mCollection = new AlbumMediaCollection();
 
+    private SelectedItemCollection mSelectedItemCollection;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +43,15 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
         mCollection.onCreate(this, this);
         Album album = getIntent().getParcelableExtra(EXTRA_ALBUM);
         mCollection.load(album);
+        mSelectedItemCollection = SelectedItemCollection.getInstance();
+        
+        //初始化checkView
+        Item item = getIntent().getParcelableExtra(EXTRA_ITEM);
+        if(mSpec.countable){
+            mCheckView.setCheckedNum(mSelectedItemCollection.checkNumOf(item));
+        }else{
+            mCheckView.setChecked(mSelectedItemCollection.isSelected(item));
+        }
     }
 
 

@@ -24,6 +24,7 @@ public class SelectedPreviewActivity extends BasePreviewActivity {
         adapter.addAll(items);
         adapter.notifyDataSetChanged();
 
+        //初始化checkView
         if (mSpec.countable) {
             mCheckView.setCheckedNum(1);
         } else {
