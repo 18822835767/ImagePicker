@@ -79,7 +79,12 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
     @Override
     public void onClick(View v) {
         if(mListener != null){
-            mListener.onCheckViewClicked(mCheckView,mMedia);
+            if(v == mCheckView){
+                mListener.onCheckViewClicked(mCheckView,mMedia);
+            }else if(v == mThumbnail){
+                mListener.onThumbnailClicked(mMedia);
+            }
+            
         }
     }
 
@@ -101,5 +106,7 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
     
     public interface OnMediaGridClickListener{
         void onCheckViewClicked(CheckView checkView,Item item);
+        
+        void onThumbnailClicked(Item item);
     }
 }

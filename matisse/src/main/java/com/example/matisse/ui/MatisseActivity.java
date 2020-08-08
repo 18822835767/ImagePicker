@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 
 import android.Manifest;
 import android.content.ContentUris;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -22,15 +23,21 @@ import android.widget.Toast;
 
 import com.example.matisse.R;
 import com.example.matisse.entity.Album;
+import com.example.matisse.entity.Item;
+import com.example.matisse.internal.ui.AlbumPreviewActivity;
 import com.example.matisse.internal.ui.MediaSelectionFragment;
+import com.example.matisse.internal.ui.adapter.AlbumMediaAdapter;
 import com.example.matisse.internal.ui.adapter.AlbumsAdapter;
 import com.example.matisse.internal.ui.widget.AlbumSpinner;
 import com.example.matisse.model.AlbumCollection;
 import com.example.matisse.model.SelectedItemCollection;
 import com.example.matisse.util.PermissionHelper;
 
+import static com.example.matisse.internal.ui.AlbumPreviewActivity.EXTRA_ALBUM;
+import static com.example.matisse.internal.ui.AlbumPreviewActivity.EXTRA_ITEM;
+
 public class MatisseActivity extends AppCompatActivity implements AlbumCollection.AlbumCallbacks,
-        AdapterView.OnItemSelectedListener {
+        AdapterView.OnItemSelectedListener, AlbumMediaAdapter.OnMediaClickListener {
 
     private static final int REQUEST_CODE = 0;
     private static final String TAG = "MatisseActivity";
@@ -162,5 +169,13 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
         mAlbumCollection.onDestroy();
+    }
+
+    @Override
+    public void onThumbnailClick(Album album, Item item) {
+        Intent intent = new Intent(this, AlbumPreviewActivity.class);
+        intent.putExtra(EXTRA_ALBUM,album);
+        intent.putExtra(EXTRA_ITEM,item);
+        startActivity(intent);
     }
 }

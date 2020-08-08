@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.matisse.R;
+import com.example.matisse.entity.Album;
 import com.example.matisse.entity.Item;
 import com.example.matisse.internal.entity.SelectionSpec;
 import com.example.matisse.internal.ui.widget.CheckView;
@@ -29,6 +30,7 @@ public class AlbumMediaAdapter extends RecyclerViewCursorAdapter<RecyclerView.Vi
     private SelectionSpec mSelectionSpec;
     private SelectedItemCollection mSelectedItemCollection;
     private Context mContext;
+    private OnMediaClickListener mOnMediaClickListener;
 
     public AlbumMediaAdapter(Context context, RecyclerView recyclerView) {
         super(null);
@@ -185,6 +187,17 @@ public class AlbumMediaAdapter extends RecyclerViewCursorAdapter<RecyclerView.Vi
         updateSelectedItem(checkView,item);
     }
 
+    @Override
+    public void onThumbnailClicked(Item item) {
+        if(mOnMediaClickListener != null){
+            mOnMediaClickListener.onThumbnailClick(null,item);
+        }
+    }
+
+    public void setOnMediaClickListener(OnMediaClickListener listener){
+        mOnMediaClickListener = listener;
+    }
+    
     private static class MediaViewHolder extends RecyclerView.ViewHolder {
 
         MediaGrid mMediaGrid;
@@ -195,4 +208,7 @@ public class AlbumMediaAdapter extends RecyclerViewCursorAdapter<RecyclerView.Vi
         }
     }
 
+    public interface OnMediaClickListener{
+        void onThumbnailClick(Album album, Item item);
+    }
 }

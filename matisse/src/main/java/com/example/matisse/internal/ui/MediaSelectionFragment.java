@@ -1,5 +1,6 @@
 package com.example.matisse.internal.ui;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,10 +19,12 @@ import android.view.ViewGroup;
 
 import com.example.matisse.R;
 import com.example.matisse.entity.Album;
+import com.example.matisse.entity.Item;
 import com.example.matisse.internal.ui.adapter.AlbumMediaAdapter;
 import com.example.matisse.model.AlbumMediaCollection;
 
-public class MediaSelectionFragment extends Fragment implements AlbumMediaCollection.AlbumMediaCallbacks {
+public class MediaSelectionFragment extends Fragment implements 
+        AlbumMediaCollection.AlbumMediaCallbacks,AlbumMediaAdapter.OnMediaClickListener {
 
     private static final String TAG = "MediaSelectionFragment";
     private static final String EXTRA_ALBUM = "extra_album";
@@ -29,7 +32,7 @@ public class MediaSelectionFragment extends Fragment implements AlbumMediaCollec
     private RecyclerView mRecyclerView;
     private AlbumMediaCollection mAlbumMediaCollection = new AlbumMediaCollection();
     private AlbumMediaAdapter mAdapter;
-    
+    private AlbumMediaAdapter.OnMediaClickListener mOnMediaClickListener;
     
     
     /**
@@ -41,6 +44,14 @@ public class MediaSelectionFragment extends Fragment implements AlbumMediaCollec
         bundle.putParcelable(EXTRA_ALBUM, album);
         fragment.setArguments(bundle);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if(context instanceof AlbumMediaAdapter.OnMediaClickListener){
+            mOnMediaClickListener = (AlbumMediaAdapter.OnMediaClickListener) context;
+        }
     }
 
     @Override
@@ -63,6 +74,7 @@ public class MediaSelectionFragment extends Fragment implements AlbumMediaCollec
         }
         
         mAdapter = new AlbumMediaAdapter(getContext(),mRecyclerView);
+        mAdapter.setOnMediaClickListener(this);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(),3));
         mRecyclerView.setAdapter(mAdapter);
         
@@ -85,5 +97,14 @@ public class MediaSelectionFragment extends Fragment implements AlbumMediaCollec
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
         mAlbumMediaCollection.onDestroy();
+    }
+
+
+    @Override
+    public void onThumbnailClick(Album album, Item item) {
+        if(mOnMediaClickListener != null){
+            mOnMediaClickListener.onThumbnailClick((Album) getArguments().getParcelable(EXTRA_ALBUM),
+                    item);
+        }
     }
 }
