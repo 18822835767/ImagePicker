@@ -70,7 +70,7 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
     public void onClick(View v) {
         if (v.getId() == R.id.check_view) {
             Item item = mAdapter.getMediaItem(mPager.getCurrentItem());
-            //如果当前预览的Item是一个选中的状态
+            //如果当前预览的Item原先是一个选中的状态
             if (mSelectedItemCollection.isSelected(item)) {
                 mSelectedItemCollection.remove(item);//将该Item从选中列表中移除
                 //如果是多选
@@ -80,7 +80,7 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
                 } else {
                     mCheckView.setChecked(false);
                 }
-                //如果当前预览的Item没有被选中
+                //如果当前预览的Item原先没有被选中
             } else {
                 //可选择的Item到达最大数量，那么该item不被选中
                 if (mSelectedItemCollection.maxSelectableReached()) {
@@ -94,7 +94,7 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
                         mCheckView.setCheckedNum(mSelectedItemCollection.checkNumOf(item));
                         //单选下，被选中
                     } else {
-                        mCheckView.setCountable(true);
+                        mCheckView.setChecked(true);
                     }
                 }
             }
@@ -132,7 +132,7 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
             if (selected) {
                 mCheckView.setChecked(true);
                 mCheckView.setEnabled(true);
-                //如果未被选中
+            //如果未被选中
             } else {
                 mCheckView.setChecked(false);
                 //到达最大数量了，不可选中
