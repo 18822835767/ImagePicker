@@ -1,6 +1,7 @@
 package com.example.matisse.ui;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -34,14 +35,17 @@ import com.example.matisse.util.PermissionHelper;
 
 import static com.example.matisse.internal.ui.AlbumPreviewActivity.EXTRA_ALBUM;
 import static com.example.matisse.internal.ui.AlbumPreviewActivity.EXTRA_ITEM;
+import static com.example.matisse.internal.ui.BasePreviewActivity.EXTRA_RESULT_APPLY;
 import static com.example.matisse.internal.ui.BasePreviewActivity.SELECTED_ITEMS;
 
 public class MatisseActivity extends AppCompatActivity implements AlbumCollection.AlbumCallbacks,
         AdapterView.OnItemSelectedListener, AlbumMediaAdapter.OnMediaClickListener,
         View.OnClickListener {
-
-    private static final int REQUEST_CODE = 0;
+    
     private static final String TAG = "MatisseActivity";
+    private static final int PERMISSION_REQUEST_CODE = 0;
+    private static final int PREVIEW_REQUEST_CODE = 10;
+    
     private AlbumCollection mAlbumCollection = new AlbumCollection();
     private SelectedItemCollection mSelectedItemCollection;
     
@@ -95,7 +99,7 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
         if (!PermissionHelper.permissionAllow(this, new String[]{Manifest.permission.
                 READ_EXTERNAL_STORAGE})) {
             PermissionHelper.requestPermissions(this, new String[]{Manifest.permission.
-                    READ_EXTERNAL_STORAGE}, REQUEST_CODE);
+                    READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
         } else {
             initAlbumData();
         }
@@ -115,7 +119,7 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
         Fragment fragment = MediaSelectionFragment.newInstance(album);
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.container, fragment)
+                .replace(R.id.container, fragment,MediaSelectionFragment.class.getSimpleName())
                 .commitAllowingStateLoss();
     }
 
@@ -151,7 +155,7 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_CODE) {
+        if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 initAlbumData();
             } else {
@@ -186,7 +190,7 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
         Intent intent = new Intent(this, AlbumPreviewActivity.class);
         intent.putExtra(EXTRA_ALBUM,album);
         intent.putExtra(EXTRA_ITEM,item);
-        startActivity(intent);
+        startActivityForResult(intent,PREVIEW_REQUEST_CODE);
     }
 
     @Override
@@ -198,9 +202,28 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
             }else{
                 Intent intent = new Intent(this, SelectedPreviewActivity.class);
                 intent.putParcelableArrayListExtra(SELECTED_ITEMS, mSelectedItemCollection.getItems());
-                startActivity(intent);
+                startActivityForResult(intent,PREVIEW_REQUEST_CODE);
             }
-            
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        if(resultCode != RESULT_OK){
+            return;
+        }
+        
+        if(requestCode == PREVIEW_REQUEST_CODE){
+            boolean apply = data.getBooleanExtra(EXTRA_RESULT_APPLY,false);
+            if(!apply){
+                MediaSelectionFragment fragment = (MediaSelectionFragment) getSupportFragmentManager().findFragmentByTag(
+                        MediaSelectionFragment.class.getSimpleName());
+                if(fragment != null){
+                    fragment.refreshMediaGrid();
+                }
+            }
         }
     }
 }

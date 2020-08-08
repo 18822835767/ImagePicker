@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         Matisse.from(this).choose()
                 .imageEngine(new PicassoEngine())
-                .countable(false)
+                .countable(true)
                 .maxSelectable(9)
                 .forResult(1);
     }

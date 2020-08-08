@@ -23,8 +23,8 @@ import com.example.matisse.entity.Item;
 import com.example.matisse.internal.ui.adapter.AlbumMediaAdapter;
 import com.example.matisse.model.AlbumMediaCollection;
 
-public class MediaSelectionFragment extends Fragment implements 
-        AlbumMediaCollection.AlbumMediaCallbacks,AlbumMediaAdapter.OnMediaClickListener {
+public class MediaSelectionFragment extends Fragment implements
+        AlbumMediaCollection.AlbumMediaCallbacks, AlbumMediaAdapter.OnMediaClickListener {
 
     private static final String TAG = "MediaSelectionFragment";
     private static final String EXTRA_ALBUM = "extra_album";
@@ -33,8 +33,8 @@ public class MediaSelectionFragment extends Fragment implements
     private AlbumMediaCollection mAlbumMediaCollection = new AlbumMediaCollection();
     private AlbumMediaAdapter mAdapter;
     private AlbumMediaAdapter.OnMediaClickListener mOnMediaClickListener;
-    
-    
+
+
     /**
      * @param album 需要加载的album.
      */
@@ -49,7 +49,7 @@ public class MediaSelectionFragment extends Fragment implements
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if(context instanceof AlbumMediaAdapter.OnMediaClickListener){
+        if (context instanceof AlbumMediaAdapter.OnMediaClickListener) {
             mOnMediaClickListener = (AlbumMediaAdapter.OnMediaClickListener) context;
         }
     }
@@ -69,16 +69,16 @@ public class MediaSelectionFragment extends Fragment implements
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Album album = null;
-        if(getArguments() != null){
+        if (getArguments() != null) {
             album = (Album) getArguments().getParcelable(EXTRA_ALBUM);
         }
-        
-        mAdapter = new AlbumMediaAdapter(getContext(),mRecyclerView);
+
+        mAdapter = new AlbumMediaAdapter(getContext(), mRecyclerView);
         mAdapter.setOnMediaClickListener(this);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(),3));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
         mRecyclerView.setAdapter(mAdapter);
-        
-        mAlbumMediaCollection.onCreate(getActivity(),this);
+
+        mAlbumMediaCollection.onCreate(getActivity(), this);
         mAlbumMediaCollection.load(album);
     }
 
@@ -92,6 +92,13 @@ public class MediaSelectionFragment extends Fragment implements
         mAdapter.swapCursor(null);
     }
 
+    /**
+     * 暴露接口，去更新界面.
+     */
+    public void refreshMediaGrid() {
+        mAdapter.notifyDataSetChanged();
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -102,7 +109,7 @@ public class MediaSelectionFragment extends Fragment implements
 
     @Override
     public void onThumbnailClick(Album album, Item item) {
-        if(mOnMediaClickListener != null){
+        if (mOnMediaClickListener != null) {
             mOnMediaClickListener.onThumbnailClick((Album) getArguments().getParcelable(EXTRA_ALBUM),
                     item);
         }

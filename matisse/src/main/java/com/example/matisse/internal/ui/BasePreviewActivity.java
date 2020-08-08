@@ -3,6 +3,7 @@ package com.example.matisse.internal.ui;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -22,6 +23,7 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
         ViewPager.OnPageChangeListener {
 
     public static final String SELECTED_ITEMS = "selection_items";
+    public static final String EXTRA_RESULT_APPLY = "extra_result_apply";
 
     protected ViewPager mPager;
     protected TextView mButtonBack;
@@ -106,38 +108,38 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
     public void onPageSelected(int position) {
         Item item = mAdapter.getMediaItem(position);
         //如果当前是多选
-        if(mSpec.countable){
+        if (mSpec.countable) {
             int checkNum = mSelectedItemCollection.checkNumOf(item);
             //被选中了
-            if(checkNum > 0){
+            if (checkNum > 0) {
                 mCheckView.setCheckedNum(checkNum);
                 mCheckView.setEnabled(true);
-            //未被选中
-            }else{
+                //未被选中
+            } else {
                 mCheckView.setCheckedNum(checkNum);
                 //到达最大数量，不可被选中
-                if(mSelectedItemCollection.maxSelectableReached()){
+                if (mSelectedItemCollection.maxSelectableReached()) {
                     mCheckView.setEnabled(false);
-                //未到达最大数量，仍有机会被选中
-                }else{
+                    //未到达最大数量，仍有机会被选中
+                } else {
                     mCheckView.setEnabled(true);
                 }
             }
-        //如果当前是单选
-        }else{
+            //如果当前是单选
+        } else {
             boolean selected = mSelectedItemCollection.isSelected(item);
             //如果被选中
-            if(selected){
+            if (selected) {
                 mCheckView.setChecked(true);
                 mCheckView.setEnabled(true);
-            //如果未被选中
-            }else {
+                //如果未被选中
+            } else {
                 mCheckView.setChecked(false);
                 //到达最大数量了，不可选中
-                if(mSelectedItemCollection.maxSelectableReached()){
+                if (mSelectedItemCollection.maxSelectableReached()) {
                     mCheckView.setEnabled(false);
-                //仍然有机会被选中
-                }else{
+                    //仍然有机会被选中
+                } else {
                     mCheckView.setEnabled(true);
                 }
             }
@@ -151,5 +153,22 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
 
     @Override
     public void onPageScrollStateChanged(int state) {
+    }
+
+    @Override
+    public void onBackPressed() {
+        sendBackResult(false);
+        super.onBackPressed();
+    }
+
+    /**
+     * 向上一个活动返回结果.
+     *
+     * @param apply 是否直接提交所选中的图片.
+     */
+    private void sendBackResult(boolean apply) {
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_RESULT_APPLY,apply);
+        setResult(RESULT_OK,intent);
     }
 }
