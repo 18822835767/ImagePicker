@@ -111,9 +111,9 @@ public class Picasso {
             return;
         }
         Bitmap result = hunter.getResult();
-        String nowUri = (String) imageView.getTag();
+        String nowkey = (String) imageView.getTag();
 
-        if (nowUri != null && nowUri.equals(hunter.getKey())) {
+        if (nowkey != null && nowkey.equals(hunter.getKey())) {
             if (result != null) {
                 imageView.setImageBitmap(result);
             } else {
