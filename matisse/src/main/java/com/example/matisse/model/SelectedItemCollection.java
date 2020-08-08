@@ -1,10 +1,14 @@
 package com.example.matisse.model;
 
+import android.os.Bundle;
+import android.os.Parcelable;
+
 import com.example.matisse.entity.Item;
 import com.example.matisse.internal.entity.SelectionSpec;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import static com.example.matisse.internal.ui.widget.CheckView.UNCHECKED;
@@ -13,6 +17,7 @@ import static com.example.matisse.internal.ui.widget.CheckView.UNCHECKED;
  * 管理被选中的图片，设计为单例模式.
  */
 public class SelectedItemCollection {
+    
     /**
      * 存储被选中的Item.
      */
@@ -41,6 +46,14 @@ public class SelectedItemCollection {
         return mItems.size() == SelectionSpec.getInstance().maxSelectable;
     }
 
+    public ArrayList<Item> getItems(){
+        return new ArrayList<>(mItems);
+    }
+    
+    public boolean isEmpty(){
+        return mItems.size() == 0;
+    }
+    
     /**
      * 返回item的索引.
      */

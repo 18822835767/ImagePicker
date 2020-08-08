@@ -14,6 +14,8 @@ import com.example.matisse.internal.ui.adapter.PreviewPagerAdapter;
  */
 public abstract class BasePreviewActivity extends AppCompatActivity {
 
+    public static final String SELECTED_ITEMS = "selection_items";
+    
     protected ViewPager mPager;
     protected TextView mButtonBack;
     protected TextView mButtonApply;

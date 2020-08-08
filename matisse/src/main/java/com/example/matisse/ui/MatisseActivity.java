@@ -7,11 +7,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import android.Manifest;
-import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -26,6 +24,7 @@ import com.example.matisse.entity.Album;
 import com.example.matisse.entity.Item;
 import com.example.matisse.internal.ui.AlbumPreviewActivity;
 import com.example.matisse.internal.ui.MediaSelectionFragment;
+import com.example.matisse.internal.ui.SelectedPreviewActivity;
 import com.example.matisse.internal.ui.adapter.AlbumMediaAdapter;
 import com.example.matisse.internal.ui.adapter.AlbumsAdapter;
 import com.example.matisse.internal.ui.widget.AlbumSpinner;
@@ -35,18 +34,22 @@ import com.example.matisse.util.PermissionHelper;
 
 import static com.example.matisse.internal.ui.AlbumPreviewActivity.EXTRA_ALBUM;
 import static com.example.matisse.internal.ui.AlbumPreviewActivity.EXTRA_ITEM;
+import static com.example.matisse.internal.ui.BasePreviewActivity.SELECTED_ITEMS;
 
 public class MatisseActivity extends AppCompatActivity implements AlbumCollection.AlbumCallbacks,
-        AdapterView.OnItemSelectedListener, AlbumMediaAdapter.OnMediaClickListener {
+        AdapterView.OnItemSelectedListener, AlbumMediaAdapter.OnMediaClickListener,
+        View.OnClickListener {
 
     private static final int REQUEST_CODE = 0;
     private static final String TAG = "MatisseActivity";
     private AlbumCollection mAlbumCollection = new AlbumCollection();
-
+    private SelectedItemCollection mSelectedItemCollection;
+    
     private AlbumSpinner mAlbumSpinner;
     private AlbumsAdapter mAlbumsAdapter;
 
     private View mContainer;
+    private TextView mButtonPreview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,17 +57,24 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
         setContentView(R.layout.activity_matisse);
 
         setActionBar();
-
+        
+        mSelectedItemCollection = SelectedItemCollection.getInstance();
         //重置SelectedItemCollection的值.
-        SelectedItemCollection.getInstance().reset();
+        mSelectedItemCollection.reset();
 
         initView();
+        initEvent();
         initSpinner();
         requestPermission();
     }
 
     private void initView() {
         mContainer = findViewById(R.id.container);
+        mButtonPreview = findViewById(R.id.button_preview);
+    }
+    
+    private void initEvent(){
+        mButtonPreview.setOnClickListener(this);
     }
 
     private void initAlbumData() {
@@ -177,5 +187,20 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
         intent.putExtra(EXTRA_ALBUM,album);
         intent.putExtra(EXTRA_ITEM,item);
         startActivity(intent);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.button_preview) {
+            if(mSelectedItemCollection.isEmpty()){
+                Toast.makeText(this,"亲，还没有图片呢",Toast.LENGTH_SHORT).show();
+                return;
+            }else{
+                Intent intent = new Intent(this, SelectedPreviewActivity.class);
+                intent.putParcelableArrayListExtra(SELECTED_ITEMS, mSelectedItemCollection.getItems());
+                startActivity(intent);
+            }
+            
+        }
     }
 }

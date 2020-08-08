@@ -3,13 +3,13 @@
     package="com.example.matisse">
 
     <application android:theme="@style/AppTheme">
-        <activity android:name=".internal.ui.widget.SelectedPreviewActivity"></activity>
+        <activity android:name=".internal.ui.SelectedPreviewActivity" />
         <activity android:name=".internal.ui.AlbumPreviewActivity" />
         <activity android:name=".internal.ui.BasePreviewActivity" />
         <activity android:name=".ui.MatisseActivity" />
     </application>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
 </manifest>
