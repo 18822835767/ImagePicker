@@ -42,6 +42,7 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
         mCheckView = findViewById(R.id.check_view);
         
         mCheckView.setOnClickListener(this);
+        mThumbnail.setOnClickListener(this);
     }
 
     public void preBindMedia(PreBindInfo preBindInfo) {
