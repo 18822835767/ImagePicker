@@ -10,8 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
-public class PreviewPagerAdapter extends FragmentPagerAdapter {
+public class PreviewPagerAdapter extends FragmentStatePagerAdapter {
  
     private List<Item> mItems = new ArrayList<>();
     
