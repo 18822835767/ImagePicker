@@ -3,13 +3,15 @@ package com.example.matisse.entity;
 import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 
 import java.io.Serializable;
 
 import androidx.annotation.Nullable;
 
-public class Item implements Serializable {
+public class Item implements Parcelable {
     private long id;
     private Uri uri;
     private long size;
@@ -20,7 +22,25 @@ public class Item implements Serializable {
         this.uri = ContentUris.withAppendedId(contentUri,id);
         this.size = size;
     }
-    
+
+    protected Item(Parcel in) {
+        id = in.readLong();
+        uri = in.readParcelable(Uri.class.getClassLoader());
+        size = in.readLong();
+    }
+
+    public static final Creator<Item> CREATOR = new Creator<Item>() {
+        @Override
+        public Item createFromParcel(Parcel in) {
+            return new Item(in);
+        }
+
+        @Override
+        public Item[] newArray(int size) {
+            return new Item[size];
+        }
+    };
+
     public static Item valueOf(Cursor cursor){
         return new Item(cursor.getLong(cursor.getColumnIndex(MediaStore.Files.FileColumns._ID)),
                 cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE)));
@@ -53,4 +73,15 @@ public class Item implements Serializable {
         return result;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeParcelable(uri, flags);
+        dest.writeLong(size);
+    }
 }
