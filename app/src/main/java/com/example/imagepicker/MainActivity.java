@@ -7,7 +7,10 @@ import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.graphics.Matrix;
 import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.Button;
 
