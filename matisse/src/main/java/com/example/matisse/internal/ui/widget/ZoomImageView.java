@@ -10,9 +10,7 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.ImageView;
 
-import java.util.List;
 
 public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView implements
         ScaleGestureDetector.OnScaleGestureListener, View.OnTouchListener,
@@ -71,7 +69,7 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
     private boolean once = true;
 
     /**
-     * 用于标记在平移时，竖直方向是否要进行平移.
+     * 平移时，用于标记是否要检车竖直方向上的边界.
      */
     private boolean isCheckTopAndBottom = true;
 
@@ -213,6 +211,7 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
                     // 如果宽度小于屏幕宽度，则禁止左右移动
                     if (rectF.width() < getWidth()) {
                         dx = 0;
+                        //因为左右没有移动，所以无需检查边界.
                         isCheckLeftAndRight = false;
                     }
                     // 如果高度小于屏幕高度，则禁止上下移动
