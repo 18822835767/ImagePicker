@@ -100,16 +100,18 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
                 if (getScale() < SCALE_MID) {
                     //放大至SCALE_MID倍
                     ZoomImageView.this.postDelayed(new AutoScaleRunnable(SCALE_MID, x, y), 16);
+                    isAutoScale = true;
                     //当前放大倍数在 SCALE_MID-SCALE_MAX之间
                 } else if (getScale() >= SCALE_MID && getScale() < SCALE_MAX) {
                     //放大至SCALE_MAX倍
                     ZoomImageView.this.postDelayed(new AutoScaleRunnable(SCALE_MAX, x, y), 16);
+                    isAutoScale = true;
                     //当前放大倍数达到SCALE_MAX
                 } else {
                     //缩小到初始大小
                     ZoomImageView.this.postDelayed(new AutoScaleRunnable(initScale, x, y), 16);
+                    isAutoScale = true;
                 }
-
                 return true;
             }
         });
@@ -123,7 +125,7 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
     @Override
     public boolean onScale(ScaleGestureDetector detector) {
         float scale = getScale();
-        float scaleFactor = detector.getScaleFactor();//缩放因子，代表
+        float scaleFactor = detector.getScaleFactor();//缩放因子
 
         if (getDrawable() == null) {
             return true;
@@ -154,7 +156,7 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
             //缩放
             setImageMatrix(mScaleMatrix);
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -200,7 +202,7 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
         lastPointCount = pointerCount;
 
         switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_MOVE:
                 //偏移量
                 float dx = x - mLastX;
                 float dy = y - mLastY;
