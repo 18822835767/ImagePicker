@@ -59,6 +59,14 @@ public class SelectedItemCollection {
         return mItems.size();
     }
     
+    public List<String> asListOfPaths(){
+        List<String> paths = new ArrayList<>();
+        for(Item item : mItems){
+            paths.add(item.getUri().toString());
+        }
+        return paths;
+    }
+    
     /**
      * 返回item的索引.
      */

@@ -1,6 +1,7 @@
 package com.example.imagepicker;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.app.Application;
@@ -21,13 +22,30 @@ import com.example.matisse.engine.impl.PicassoEngine;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private Button mButton;
+    private RecyclerView mRecyclerView;
+    private PathAdapter mAdapter;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initView();
+        initData();
+        initEvent();
+    }
+    
+    private void initView(){
         mButton = findViewById(R.id.start_activity);
+        mRecyclerView = findViewById(R.id.recycler_view);
+    }
+    
+    private void initData(){
+        mAdapter = new PathAdapter();
+        mRecyclerView.setAdapter(mAdapter);
+    }
+    
+    private void initEvent(){
         mButton.setOnClickListener(this);
     }
 
