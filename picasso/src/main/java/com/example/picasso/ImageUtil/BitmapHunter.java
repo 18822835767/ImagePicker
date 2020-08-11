@@ -13,6 +13,7 @@ public class BitmapHunter implements Runnable,Comparable<BitmapHunter> {
     private static long priorityOrder = 0;
     
     Picasso picasso;
+    boolean LIFO;
     private Dispatcher dispatcher;
     private ImageViewAction action;
     private RequestHandler requestHandler;
@@ -32,10 +33,12 @@ public class BitmapHunter implements Runnable,Comparable<BitmapHunter> {
         
         //FIFO方式加载，后面加进来的优先级比较低.
         if(!action.isLIFO()){
+            this.LIFO = false;
             --priorityOrder;
             this.priority = priorityOrder;
         //LIFO方式加载，后面加进来的优先级比较高.
         }else {
+            this.LIFO = true;
             ++priorityOrder;
             this.priority = priorityOrder;
         }

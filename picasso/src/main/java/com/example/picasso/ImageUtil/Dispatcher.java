@@ -8,6 +8,7 @@ import android.os.Message;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -24,8 +25,10 @@ class Dispatcher {
     private static final int HUNTER_DECODE_FAILED = 6;
     private static final int HUNTER_DELAY_NEXT_BATCH = 7;
     static final int HUNTER_BATCH_COMPLETE = 8;
+    private static final int LIFO_DELAY_BATCH_HUNTER = 9;
 
     private static final int BATCH_DELAY = 200; // ms
+    private static final int LIFO_DELAY = 200;//ms
 
     private Context context;
     private HandlerThread dispatcherThread;
@@ -33,6 +36,11 @@ class Dispatcher {
     private Handler handler;
     private Handler mainThreadHandler;
     private List<BitmapHunter> batch;
+
+    /**
+     * 存储的是进行LIFO加载的BitmapHunter.
+     */
+    private LinkedList<BitmapHunter> LIFOHunters = new LinkedList<>();
 
     /**
      * 这里的是String存储的是图片标识(例如图片的uri).
@@ -70,6 +78,17 @@ class Dispatcher {
         List<BitmapHunter> copy = new ArrayList<>(batch);
         batch.clear();
         mainThreadHandler.sendMessage(mainThreadHandler.obtainMessage(HUNTER_BATCH_COMPLETE, copy));
+    }
+
+    /**
+     * 对于已经到达延迟时间的LIFO下的BitmapHunter进行处理.
+     */
+    private void performLIFOBatchComplete() {
+        List<BitmapHunter> copy = new ArrayList<>(LIFOHunters);
+        LIFOHunters.clear();
+        for (BitmapHunter hunter : copy) {
+            service.execute(hunter);
+        }
     }
 
     private void performSubmit(ImageViewAction action) {
@@ -118,6 +137,16 @@ class Dispatcher {
 
     }
 
+    /**
+     * 对于LIFO加载的BitmapHunter，进行延迟的批处理操作.
+     */
+    private void LIFOHunterBatch(BitmapHunter hunter) {
+        LIFOHunters.addFirst(hunter);
+        if (!handler.hasMessages(LIFO_DELAY_BATCH_HUNTER)) {
+            handler.sendEmptyMessageDelayed(LIFO_DELAY_BATCH_HUNTER, LIFO_DELAY);
+        }
+    }
+
     private static class DispatcherHandler extends Handler {
         private Dispatcher dispatcher;
 
@@ -151,6 +180,10 @@ class Dispatcher {
                 }
                 case HUNTER_DELAY_NEXT_BATCH: {
                     dispatcher.performBatchComplete();
+                    break;
+                }
+                case LIFO_DELAY_BATCH_HUNTER: {
+                    dispatcher.performLIFOBatchComplete();
                     break;
                 }
                 default:
