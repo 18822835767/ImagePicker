@@ -25,7 +25,7 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
     /**
      * 双击放大一次后的放大倍数.
      */
-    private static final float SCALE_MID = 2.0f;
+    private static final float SCALE_MID = 1.5f;
     /**
      * 第二次双击放大后的放大倍数.
      */
