@@ -9,11 +9,12 @@ class Request {
     boolean resize;
     boolean LIFO = false;
 
-    private Request(Uri uri, int targetWidth, int targetHeight,boolean resize) {
+    private Request(Uri uri, int targetWidth, int targetHeight,boolean resize,boolean LIFO) {
         this.uri = uri;
         this.targetWidth = targetWidth;
         this.targetHeight = targetHeight;
         this.resize = resize;
+        this.LIFO = LIFO;
     }
 
     static class Builder {
@@ -40,7 +41,7 @@ class Request {
         }
 
         Request build() {
-            return new Request(uri, targetWidth, targetHeight,resize);
+            return new Request(uri, targetWidth, targetHeight,resize,LIFO);
         }
 
     }

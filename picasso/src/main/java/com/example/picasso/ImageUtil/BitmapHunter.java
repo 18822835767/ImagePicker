@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import java.io.IOException;
 import java.util.List;
 
-public class BitmapHunter implements Runnable,Comparable<Runnable> {
+public class BitmapHunter implements Runnable,Comparable<BitmapHunter> {
 
     Picasso picasso;
     private Dispatcher dispatcher;
@@ -14,6 +14,7 @@ public class BitmapHunter implements Runnable,Comparable<Runnable> {
     private Bitmap result;
     private String key;
     private Request data;
+    private int priority;
 
     private BitmapHunter(Picasso picasso, Dispatcher dispatcher, ImageViewAction action,
                          RequestHandler requestHandler) {
@@ -81,9 +82,9 @@ public class BitmapHunter implements Runnable,Comparable<Runnable> {
 
         return null;
     }
-
+    
     @Override
-    public int compareTo(Runnable o) {
-        return 0;
+    public int compareTo(BitmapHunter o) {
+        return Integer.compare(this.priority, o.priority);
     }
 }
