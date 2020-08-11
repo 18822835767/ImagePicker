@@ -10,6 +10,7 @@ class ImageViewAction {
     private WeakReference<ImageView> target;
     private int errorResId;
     private String key;
+    private boolean LIFO;
     
     ImageViewAction(Picasso picasso, ImageView imageView, Request data, int errorResId, String key) {
         this.picasso = picasso;
@@ -17,6 +18,7 @@ class ImageViewAction {
         request = data;
         this.errorResId = errorResId;
         this.key = key;
+        this.LIFO = data.LIFO;
     }
     
     ImageView getTarget(){
@@ -40,5 +42,9 @@ class ImageViewAction {
 
     int getErrorResId() {
         return errorResId;
+    }
+
+    public boolean isLIFO() {
+        return LIFO;
     }
 }

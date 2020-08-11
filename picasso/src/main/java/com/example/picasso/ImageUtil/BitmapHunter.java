@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import java.io.IOException;
 import java.util.List;
 
-public class BitmapHunter implements Runnable {
+public class BitmapHunter implements Runnable,Comparable<Runnable> {
 
     Picasso picasso;
     private Dispatcher dispatcher;
@@ -80,5 +80,10 @@ public class BitmapHunter implements Runnable {
         }
 
         return null;
+    }
+
+    @Override
+    public int compareTo(Runnable o) {
+        return 0;
     }
 }

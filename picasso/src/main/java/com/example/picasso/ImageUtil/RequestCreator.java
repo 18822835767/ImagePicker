@@ -33,6 +33,11 @@ public class RequestCreator {
         return this;
     }
 
+    public RequestCreator LIFO(boolean LIFO){
+        data.LIFO(LIFO);
+        return this;
+    }
+    
     public void into(ImageView imageView) {
         //设置tag标志.
         imageView.setTag(createKey(data));
