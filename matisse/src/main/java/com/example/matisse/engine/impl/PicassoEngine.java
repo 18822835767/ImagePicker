@@ -13,6 +13,7 @@ public class PicassoEngine implements ImageEngine {
     public void loadThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, Uri uri) {
         Picasso.get(context).load(uri).placeholder(placeholder)
                 .resize(resize,resize)
+                .LIFO(true)
                 .into(imageView);
     }
 

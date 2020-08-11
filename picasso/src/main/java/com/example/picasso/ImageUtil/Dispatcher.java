@@ -99,8 +99,15 @@ class Dispatcher {
 
         BitmapHunter hunter = BitmapHunter.forRequest(action.getPicasso(), this, action);
         if (hunter != null) {
-            //提交任务
-            service.execute(hunter);
+            //FIFO
+            if (!action.isLIFO()) {
+                //提交任务
+                service.execute(hunter);
+                //LIFO
+            } else {
+                LIFOHunterBatch(hunter);
+            }
+
         }
         hunterMap.put(action.getKey(), hunter);
     }
