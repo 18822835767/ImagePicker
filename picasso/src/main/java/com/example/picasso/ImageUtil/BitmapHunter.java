@@ -103,6 +103,6 @@ public class BitmapHunter implements Runnable,Comparable<BitmapHunter> {
     
     @Override
     public int compareTo(BitmapHunter o) {
-        return Long.compare(this.priority, o.priority);
+        return Long.compare(o.priority, this.priority);
     }
 }
