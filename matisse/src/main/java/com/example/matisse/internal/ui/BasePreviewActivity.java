@@ -5,6 +5,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +45,8 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
         initView();
         initData();
         initEvent();
+        
+        updateBottomToolbar();
     }
 
     private void initView() {
@@ -64,6 +67,7 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
     private void initEvent() {
         mCheckView.setOnClickListener(this);
         mPager.addOnPageChangeListener(this);
+        mButtonApply.setOnClickListener(this);
     }
 
     @Override
@@ -97,6 +101,11 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
                         mCheckView.setChecked(true);
                     }
                 }
+            }
+            updateBottomToolbar();
+        }else if(v.getId() == R.id.button_apply){
+            if (mSelectedItemCollection.isEmpty()) {
+                Toast.makeText(this, "亲，还没有图片呢", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -170,5 +179,17 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
         Intent intent = new Intent();
         intent.putExtra(EXTRA_RESULT_APPLY,apply);
         setResult(RESULT_OK,intent);
+    }
+
+    /**
+     * 更新底部的状态栏.
+     */
+    private void updateBottomToolbar() {
+        int count = mSelectedItemCollection.getSize();
+        if(count == 0){
+            mButtonApply.setText(getResources().getString(R.string.apply));
+        }else{
+            mButtonApply.setText(String.valueOf(getResources().getString(R.string.apply)+"("+count+")"));
+        }
     }
 }
