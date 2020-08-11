@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -14,12 +15,11 @@ import androidx.viewpager.widget.PagerAdapter;
 public class PathAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     
     private List<String> mPaths;
-    
-    public void setData(List<String> paths){
+
+    public PathAdapter(List<String> paths) {
         mPaths = paths;
-        notifyDataSetChanged();
     }
-    
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -34,14 +34,14 @@ public class PathAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return mPaths == null ? 0 : mPaths.size();
+        return mPaths.size();
     }
     
     static class ViewHolder extends RecyclerView.ViewHolder{
 
         TextView mTextView;
         
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
             mTextView = itemView.findViewById(R.id.path_text);
         }

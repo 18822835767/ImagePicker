@@ -8,6 +8,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -33,6 +34,8 @@ import com.example.matisse.model.AlbumCollection;
 import com.example.matisse.model.SelectedItemCollection;
 import com.example.matisse.util.PermissionHelper;
 
+import java.util.ArrayList;
+
 import static com.example.matisse.internal.ui.AlbumPreviewActivity.EXTRA_ALBUM;
 import static com.example.matisse.internal.ui.AlbumPreviewActivity.EXTRA_ITEM;
 import static com.example.matisse.internal.ui.BasePreviewActivity.EXTRA_RESULT_APPLY;
@@ -43,6 +46,7 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
         View.OnClickListener,AlbumMediaAdapter.CheckStateListener {
 
     private static final String TAG = "MatisseActivity";
+    public static final String EXTRA_RESULT_SELECTION_PATH = "extra_result_selection_path";
     private static final int PERMISSION_REQUEST_CODE = 0;
     private static final int PREVIEW_REQUEST_CODE = 10;
 
@@ -221,6 +225,12 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
         }else if(v.getId() == R.id.button_apply){
             if (mSelectedItemCollection.isEmpty()) {
                 Toast.makeText(this, "亲，还没有图片呢", Toast.LENGTH_SHORT).show();
+            }else{
+                Intent data = new Intent();
+                data.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, 
+                        (ArrayList<String>) mSelectedItemCollection.asListOfPaths());
+                setResult(Activity.RESULT_OK,data);
+                finish();
             }
         }
     }
