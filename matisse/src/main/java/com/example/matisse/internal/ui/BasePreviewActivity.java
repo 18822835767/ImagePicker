@@ -68,6 +68,7 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
         mCheckView.setOnClickListener(this);
         mPager.addOnPageChangeListener(this);
         mButtonApply.setOnClickListener(this);
+        mButtonBack.setOnClickListener(this);
     }
 
     @Override
@@ -110,6 +111,9 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
                 sendBackResult(true);
                 finish();
             }
+        }else if(v.getId() == R.id.button_back){
+            sendBackResult(false);
+            finish();
         }
     }
 
