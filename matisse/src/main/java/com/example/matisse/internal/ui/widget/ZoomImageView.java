@@ -200,14 +200,24 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
         }
 
         lastPointCount = pointerCount;
+        RectF rectF = getMatrixRectF();
 
         switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                //解决滑动冲突，当宽或高大于屏幕宽度或高时，因为此时可以移动，所以让事件不被父View拦截
+                if (rectF.width() > getWidth() || rectF.height() > getHeight()) {
+                    getParent().requestDisallowInterceptTouchEvent(true);
+                }
+                break;
             case MotionEvent.ACTION_MOVE:
+                //解决滑动冲突，当宽或高大于屏幕宽度或高时，因为此时可以移动，所以让事件不被父View拦截
+                if (rectF.width() > getWidth() || rectF.height() > getHeight()) {
+                    getParent().requestDisallowInterceptTouchEvent(true);
+                }
                 //偏移量
                 float dx = x - mLastX;
                 float dy = y - mLastY;
-
-                RectF rectF = getMatrixRectF();
+                
                 if (getDrawable() != null) {
                     isCheckLeftAndRight = isCheckTopAndBottom = true;
                     // 如果宽度小于屏幕宽度，则禁止左右移动
@@ -435,11 +445,11 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
             //如果值在合法范围内，继续缩放
             if (((tmpScale > 1f) && (currentScale < mTargetScale))
                     || ((tmpScale < 1f) && (mTargetScale < currentScale))) {
-                ZoomImageView.this.postDelayed(this,16);
-            //调整大小(因为比如放大后可能超过需要的大小一点点)，设置为目标缩放比例
+                ZoomImageView.this.postDelayed(this, 16);
+                //调整大小(因为比如放大后可能超过需要的大小一点点)，设置为目标缩放比例
             } else {
                 final float deltaScale = mTargetScale / currentScale;
-                mScaleMatrix.postScale(deltaScale,deltaScale,x,y);
+                mScaleMatrix.postScale(deltaScale, deltaScale, x, y);
                 checkBorderAndCenterWhenScale();
                 setImageMatrix(mScaleMatrix);
                 isAutoScale = false;
