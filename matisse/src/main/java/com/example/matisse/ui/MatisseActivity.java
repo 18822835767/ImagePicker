@@ -226,10 +226,7 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
             if (mSelectedItemCollection.isEmpty()) {
                 Toast.makeText(this, "亲，还没有图片呢", Toast.LENGTH_SHORT).show();
             }else{
-                Intent data = new Intent();
-                data.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, 
-                        (ArrayList<String>) mSelectedItemCollection.asListOfPaths());
-                setResult(Activity.RESULT_OK,data);
+                sendBackResult();
                 finish();
             }
         }
@@ -252,10 +249,20 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
                     fragment.refreshMediaGrid();
                 }
                 updateBottomToolbar();
+            }else{
+                sendBackResult();
+                finish();
             }
         }
     }
 
+    private void sendBackResult(){
+        Intent data = new Intent();
+        data.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH,
+                (ArrayList<String>) mSelectedItemCollection.asListOfPaths());
+        setResult(Activity.RESULT_OK,data);
+    }
+    
     @Override
     public void update() {
         updateBottomToolbar();

@@ -106,6 +106,9 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
         }else if(v.getId() == R.id.button_apply){
             if (mSelectedItemCollection.isEmpty()) {
                 Toast.makeText(this, "亲，还没有图片呢", Toast.LENGTH_SHORT).show();
+            }else{
+                sendBackResult(true);
+                finish();
             }
         }
     }
