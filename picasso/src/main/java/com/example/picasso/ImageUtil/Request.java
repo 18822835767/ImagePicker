@@ -7,9 +7,13 @@ class Request {
     int targetWidth;
     int targetHeight;
     boolean resize;
-    boolean LIFO = false;
 
-    private Request(Uri uri, int targetWidth, int targetHeight,boolean resize,boolean LIFO) {
+    /**
+     * 加载方式，默认是FIFO.
+     */
+    boolean LIFO;
+
+    private Request(Uri uri, int targetWidth, int targetHeight, boolean resize, boolean LIFO) {
         this.uri = uri;
         this.targetWidth = targetWidth;
         this.targetHeight = targetHeight;
@@ -23,7 +27,7 @@ class Request {
         int targetHeight;
         boolean resize = false;
         boolean LIFO = false;
-        
+
         Builder(Uri uri) {
             this.uri = uri;
         }
@@ -34,14 +38,14 @@ class Request {
             resize = true;
             return this;
         }
-        
-        Builder LIFO(boolean LIFO){
+
+        Builder LIFO(boolean LIFO) {
             this.LIFO = LIFO;
             return this;
         }
 
         Request build() {
-            return new Request(uri, targetWidth, targetHeight,resize,LIFO);
+            return new Request(uri, targetWidth, targetHeight, resize, LIFO);
         }
 
     }

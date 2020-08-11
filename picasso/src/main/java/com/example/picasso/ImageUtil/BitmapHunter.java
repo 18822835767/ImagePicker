@@ -7,6 +7,11 @@ import java.util.List;
 
 public class BitmapHunter implements Runnable,Comparable<BitmapHunter> {
 
+    /**
+     * 这里面的数字代表的是优先级的顺序,根据加载方式来判断该数字是递增还是递减.
+     * */
+    private static long priorityOrder = 0;
+    
     Picasso picasso;
     private Dispatcher dispatcher;
     private ImageViewAction action;
@@ -14,7 +19,7 @@ public class BitmapHunter implements Runnable,Comparable<BitmapHunter> {
     private Bitmap result;
     private String key;
     private Request data;
-    private int priority;
+    private long priority;
 
     private BitmapHunter(Picasso picasso, Dispatcher dispatcher, ImageViewAction action,
                          RequestHandler requestHandler) {
@@ -24,6 +29,16 @@ public class BitmapHunter implements Runnable,Comparable<BitmapHunter> {
         this.requestHandler = requestHandler;
         this.key = action.getKey();
         this.data = action.getRequest();
+        
+        //FIFO方式加载，后面加进来的优先级比较低.
+        if(!action.isLIFO()){
+            --priorityOrder;
+            this.priority = priorityOrder;
+        //LIFO方式加载，后面加进来的优先级比较高.
+        }else {
+            ++priorityOrder;
+            this.priority = priorityOrder;
+        }
     }
 
     String getKey() {
@@ -85,6 +100,6 @@ public class BitmapHunter implements Runnable,Comparable<BitmapHunter> {
     
     @Override
     public int compareTo(BitmapHunter o) {
-        return Integer.compare(this.priority, o.priority);
+        return Long.compare(this.priority, o.priority);
     }
 }
