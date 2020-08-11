@@ -40,20 +40,21 @@ import static com.example.matisse.internal.ui.BasePreviewActivity.SELECTED_ITEMS
 
 public class MatisseActivity extends AppCompatActivity implements AlbumCollection.AlbumCallbacks,
         AdapterView.OnItemSelectedListener, AlbumMediaAdapter.OnMediaClickListener,
-        View.OnClickListener {
-    
+        View.OnClickListener,AlbumMediaAdapter.CheckStateListener {
+
     private static final String TAG = "MatisseActivity";
     private static final int PERMISSION_REQUEST_CODE = 0;
     private static final int PREVIEW_REQUEST_CODE = 10;
-    
+
     private AlbumCollection mAlbumCollection = new AlbumCollection();
     private SelectedItemCollection mSelectedItemCollection;
-    
+
     private AlbumSpinner mAlbumSpinner;
     private AlbumsAdapter mAlbumsAdapter;
 
     private View mContainer;
     private TextView mButtonPreview;
+    private TextView mButtonApply;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,7 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
         setContentView(R.layout.activity_matisse);
 
         setActionBar();
-        
+
         mSelectedItemCollection = SelectedItemCollection.getInstance();
         //重置SelectedItemCollection的值.
         mSelectedItemCollection.reset();
@@ -75,10 +76,12 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
     private void initView() {
         mContainer = findViewById(R.id.container);
         mButtonPreview = findViewById(R.id.button_preview);
+        mButtonApply = findViewById(R.id.button_apply);
     }
-    
-    private void initEvent(){
+
+    private void initEvent() {
         mButtonPreview.setOnClickListener(this);
+        mButtonApply.setOnClickListener(this);
     }
 
     private void initAlbumData() {
@@ -119,8 +122,20 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
         Fragment fragment = MediaSelectionFragment.newInstance(album);
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.container, fragment,MediaSelectionFragment.class.getSimpleName())
+                .replace(R.id.container, fragment, MediaSelectionFragment.class.getSimpleName())
                 .commitAllowingStateLoss();
+    }
+
+    /**
+     * 更新底部的状态栏，比如勾选图片后更新多张图片可使用.
+     */
+    private void updateBottomToolbar() {
+        int count = mSelectedItemCollection.getSize();
+        if(count == 0){
+            mButtonApply.setText(getResources().getString(R.string.apply));
+        }else{
+            mButtonApply.setText(String.valueOf(getResources().getString(R.string.apply)+"("+count+")"));
+        }
     }
 
     @Override
@@ -188,21 +203,24 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
     @Override
     public void onThumbnailClick(Album album, Item item) {
         Intent intent = new Intent(this, AlbumPreviewActivity.class);
-        intent.putExtra(EXTRA_ALBUM,album);
-        intent.putExtra(EXTRA_ITEM,item);
-        startActivityForResult(intent,PREVIEW_REQUEST_CODE);
+        intent.putExtra(EXTRA_ALBUM, album);
+        intent.putExtra(EXTRA_ITEM, item);
+        startActivityForResult(intent, PREVIEW_REQUEST_CODE);
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.button_preview) {
-            if(mSelectedItemCollection.isEmpty()){
-                Toast.makeText(this,"亲，还没有图片呢",Toast.LENGTH_SHORT).show();
-                return;
-            }else{
+            if (mSelectedItemCollection.isEmpty()) {
+                Toast.makeText(this, "亲，还没有图片呢", Toast.LENGTH_SHORT).show();
+            }else {
                 Intent intent = new Intent(this, SelectedPreviewActivity.class);
                 intent.putParcelableArrayListExtra(SELECTED_ITEMS, mSelectedItemCollection.getItems());
-                startActivityForResult(intent,PREVIEW_REQUEST_CODE);
+                startActivityForResult(intent, PREVIEW_REQUEST_CODE);
+            }
+        }else if(v.getId() == R.id.button_apply){
+            if (mSelectedItemCollection.isEmpty()) {
+                Toast.makeText(this, "亲，还没有图片呢", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -210,20 +228,26 @@ public class MatisseActivity extends AppCompatActivity implements AlbumCollectio
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        
-        if(resultCode != RESULT_OK){
+
+        if (resultCode != RESULT_OK) {
             return;
         }
-        
-        if(requestCode == PREVIEW_REQUEST_CODE){
-            boolean apply = data.getBooleanExtra(EXTRA_RESULT_APPLY,false);
-            if(!apply){
+
+        if (requestCode == PREVIEW_REQUEST_CODE) {
+            boolean apply = data.getBooleanExtra(EXTRA_RESULT_APPLY, false);
+            if (!apply) {
                 MediaSelectionFragment fragment = (MediaSelectionFragment) getSupportFragmentManager().findFragmentByTag(
                         MediaSelectionFragment.class.getSimpleName());
-                if(fragment != null){
+                if (fragment != null) {
                     fragment.refreshMediaGrid();
                 }
+                updateBottomToolbar();
             }
         }
+    }
+
+    @Override
+    public void update() {
+        updateBottomToolbar();
     }
 }

@@ -31,6 +31,7 @@ public class AlbumMediaAdapter extends RecyclerViewCursorAdapter<RecyclerView.Vi
     private SelectedItemCollection mSelectedItemCollection;
     private Context mContext;
     private OnMediaClickListener mOnMediaClickListener;
+    private CheckStateListener mCheckStateListener;
 
     public AlbumMediaAdapter(Context context, RecyclerView recyclerView) {
         super(null);
@@ -168,6 +169,10 @@ public class AlbumMediaAdapter extends RecyclerViewCursorAdapter<RecyclerView.Vi
             }
         }
         notifyDataSetChanged();
+        //通知更新
+        if(mCheckStateListener != null){
+            mCheckStateListener.update();
+        }
     }
     
     private int getImageResize(Context context) {
@@ -197,7 +202,11 @@ public class AlbumMediaAdapter extends RecyclerViewCursorAdapter<RecyclerView.Vi
     public void setOnMediaClickListener(OnMediaClickListener listener){
         mOnMediaClickListener = listener;
     }
-    
+
+    public void setCheckStateListener(CheckStateListener checkStateListener) {
+        mCheckStateListener = checkStateListener;
+    }
+
     private static class MediaViewHolder extends RecyclerView.ViewHolder {
 
         MediaGrid mMediaGrid;
@@ -210,5 +219,9 @@ public class AlbumMediaAdapter extends RecyclerViewCursorAdapter<RecyclerView.Vi
 
     public interface OnMediaClickListener{
         void onThumbnailClick(Album album, Item item);
+    }
+    
+    public interface CheckStateListener{
+        void update();
     }
 }

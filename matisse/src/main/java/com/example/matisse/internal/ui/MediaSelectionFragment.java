@@ -24,7 +24,8 @@ import com.example.matisse.internal.ui.adapter.AlbumMediaAdapter;
 import com.example.matisse.model.AlbumMediaCollection;
 
 public class MediaSelectionFragment extends Fragment implements
-        AlbumMediaCollection.AlbumMediaCallbacks, AlbumMediaAdapter.OnMediaClickListener {
+        AlbumMediaCollection.AlbumMediaCallbacks, AlbumMediaAdapter.OnMediaClickListener,
+        AlbumMediaAdapter.CheckStateListener {
 
     private static final String TAG = "MediaSelectionFragment";
     private static final String EXTRA_ALBUM = "extra_album";
@@ -33,6 +34,7 @@ public class MediaSelectionFragment extends Fragment implements
     private AlbumMediaCollection mAlbumMediaCollection = new AlbumMediaCollection();
     private AlbumMediaAdapter mAdapter;
     private AlbumMediaAdapter.OnMediaClickListener mOnMediaClickListener;
+    private AlbumMediaAdapter.CheckStateListener mCheckStateListener;
 
 
     /**
@@ -45,12 +47,15 @@ public class MediaSelectionFragment extends Fragment implements
         fragment.setArguments(bundle);
         return fragment;
     }
-
+    
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (context instanceof AlbumMediaAdapter.OnMediaClickListener) {
             mOnMediaClickListener = (AlbumMediaAdapter.OnMediaClickListener) context;
+        }
+        if(context instanceof  AlbumMediaAdapter.CheckStateListener){
+            mCheckStateListener = (AlbumMediaAdapter.CheckStateListener) context;
         }
     }
 
@@ -75,6 +80,7 @@ public class MediaSelectionFragment extends Fragment implements
 
         mAdapter = new AlbumMediaAdapter(getContext(), mRecyclerView);
         mAdapter.setOnMediaClickListener(this);
+        mAdapter.setCheckStateListener(this);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
         mRecyclerView.setAdapter(mAdapter);
 
@@ -112,6 +118,13 @@ public class MediaSelectionFragment extends Fragment implements
         if (mOnMediaClickListener != null) {
             mOnMediaClickListener.onThumbnailClick((Album) getArguments().getParcelable(EXTRA_ALBUM),
                     item);
+        }
+    }
+
+    @Override
+    public void update() {
+        if(mCheckStateListener != null){
+            mCheckStateListener.update();
         }
     }
 }

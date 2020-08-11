@@ -1,5 +1,6 @@
 package com.example.matisse.model;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Parcelable;
 
@@ -52,6 +53,10 @@ public class SelectedItemCollection {
     
     public boolean isEmpty(){
         return mItems.size() == 0;
+    }
+    
+    public int getSize(){
+        return mItems.size();
     }
     
     /**
