@@ -116,6 +116,9 @@ class Dispatcher {
     }
 
     private void performCancel(ImageViewAction action) {
+        //先试着从LIFO批处理的队列中进行移除
+        LIFOHunters.remove(hunterMap.get(action.getKey()));
+        //然后再从hunterMap以及线程池里移除
         String key = action.getKey();
         BitmapHunter hunter = hunterMap.get(key);
 
