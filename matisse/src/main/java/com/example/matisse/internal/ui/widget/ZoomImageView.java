@@ -21,7 +21,7 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
     /**
      * 记录初始的图片的大小.
      */
-    private float initScale = 1.0f;
+    private float mInitScale = 1.0f;
     /**
      * 双击放大一次后的放大倍数.
      */
@@ -33,7 +33,7 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
     /**
      * 记录矩阵值的数组.
      */
-    private float[] matrixValues = new float[9];
+    private float[] mMatrixValues = new float[9];
     private final Matrix mScaleMatrix = new Matrix();
 
     /**
@@ -56,24 +56,24 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
     /**
      * 记录上次平移时的手指个数.
      */
-    private int lastPointCount;
+    private int mLastPointCount;
 
     /**
      * 双击放大缩小时，有个类似动画的操作，这里用来标记是否正处于该"动画"中.
      */
-    private boolean isAutoScale;
+    private boolean mAutoScale;
 
     /**
      * 用于记录图片是否为第一次加载进入视图.
      */
-    private boolean once = true;
+    private boolean mFirst = true;
 
     /**
      * 平移时，用于标记是否要检车竖直方向上的边界.
      */
-    private boolean isCheckTopAndBottom = true;
+    private boolean mCheckTopAndBottom = true;
 
-    private boolean isCheckLeftAndRight = true;
+    private boolean mCheckLeftAndRight = true;
 
     public ZoomImageView(Context context) {
         this(context, null);
@@ -89,7 +89,7 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
             @Override
             public boolean onDoubleTap(MotionEvent e) {
                 //若当前正在执行缩放操作，直接返回true
-                if (isAutoScale) {
+                if (mAutoScale) {
                     return true;
                 }
 
@@ -100,17 +100,17 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
                 if (getScale() < SCALE_MID) {
                     //放大至SCALE_MID倍
                     ZoomImageView.this.postDelayed(new AutoScaleRunnable(SCALE_MID, x, y), 16);
-                    isAutoScale = true;
+                    mAutoScale = true;
                     //当前放大倍数在 SCALE_MID-SCALE_MAX之间
                 } else if (getScale() >= SCALE_MID && getScale() < SCALE_MAX) {
                     //放大至SCALE_MAX倍
                     ZoomImageView.this.postDelayed(new AutoScaleRunnable(SCALE_MAX, x, y), 16);
-                    isAutoScale = true;
+                    mAutoScale = true;
                     //当前放大倍数达到SCALE_MAX
                 } else {
                     //缩小到初始大小
-                    ZoomImageView.this.postDelayed(new AutoScaleRunnable(initScale, x, y), 16);
-                    isAutoScale = true;
+                    ZoomImageView.this.postDelayed(new AutoScaleRunnable(mInitScale, x, y), 16);
+                    mAutoScale = true;
                 }
                 return true;
             }
@@ -138,11 +138,11 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
           2.将要缩小，且当前缩小值未小于initScale(初始值)
           */
         if ((scale < SCALE_MAX && scaleFactor > 1.0f) ||
-                (scale > initScale && scaleFactor < 1.0f)) {
+                (scale > mInitScale && scaleFactor < 1.0f)) {
 
             //若缩小后，小于初始值，那么让缩放因子进行运算，使得缩小后到达初始值
-            if (scaleFactor * scale < initScale) {
-                scaleFactor = initScale / scale;
+            if (scaleFactor * scale < mInitScale) {
+                scaleFactor = mInitScale / scale;
             }
 
             //若放大后，大于最大放大值，那么让缩放因子进行运算，使得放大后到达最大值.
@@ -194,12 +194,12 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
         y = y / pointerCount;
 
         //每当触摸点发生变化时，重置mLasX , mLastY，防止手指数量变化时，产生一段突然的移动
-        if (pointerCount != lastPointCount) {
+        if (pointerCount != mLastPointCount) {
             mLastX = x;
             mLastY = y;
         }
 
-        lastPointCount = pointerCount;
+        mLastPointCount = pointerCount;
         RectF rectF = getMatrixRectF();
 
         switch (event.getAction()) {
@@ -219,17 +219,17 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
                 float dy = y - mLastY;
                 
                 if (getDrawable() != null) {
-                    isCheckLeftAndRight = isCheckTopAndBottom = true;
+                    mCheckLeftAndRight = mCheckTopAndBottom = true;
                     // 如果宽度小于屏幕宽度，则禁止左右移动
                     if (rectF.width() < getWidth()) {
                         dx = 0;
                         //因为左右没有移动，所以无需检查边界.
-                        isCheckLeftAndRight = false;
+                        mCheckLeftAndRight = false;
                     }
                     // 如果高度小于屏幕高度，则禁止上下移动
                     if (rectF.height() < getHeight()) {
                         dy = 0;
-                        isCheckTopAndBottom = false;
+                        mCheckTopAndBottom = false;
                     }
                     //设置偏移量
                     mScaleMatrix.postTranslate(dx, dy);
@@ -243,7 +243,7 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                lastPointCount = 0;
+                mLastPointCount = 0;
                 break;
         }
 
@@ -254,8 +254,8 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
      * 获得缩放的倍数.
      */
     public float getScale() {
-        mScaleMatrix.getValues(matrixValues);
-        return matrixValues[Matrix.MSCALE_X];
+        mScaleMatrix.getValues(mMatrixValues);
+        return mMatrixValues[Matrix.MSCALE_X];
     }
 
     /**
@@ -313,16 +313,16 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
         final float viewWidth = getWidth();
         final float viewHeight = getHeight();
         //判断移动后，图片显示是否超出屏幕边界.
-        if (rect.top > 0 && isCheckTopAndBottom) {
+        if (rect.top > 0 && mCheckTopAndBottom) {
             deltaY = -rect.top;
         }
-        if (rect.bottom < viewHeight && isCheckTopAndBottom) {
+        if (rect.bottom < viewHeight && mCheckTopAndBottom) {
             deltaY = viewHeight - rect.bottom;
         }
-        if (rect.left > 0 && isCheckLeftAndRight) {
+        if (rect.left > 0 && mCheckLeftAndRight) {
             deltaX = -rect.left;
         }
-        if (rect.right < viewWidth && isCheckLeftAndRight) {
+        if (rect.right < viewWidth && mCheckLeftAndRight) {
             deltaX = viewWidth - rect.right;
         }
         mScaleMatrix.postTranslate(deltaX, deltaY);
@@ -362,7 +362,7 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
      */
     @Override
     public void onGlobalLayout() {
-        if (once) {
+        if (mFirst) {
             Drawable d = getDrawable();
             if (d == null) {
                 return;
@@ -384,13 +384,13 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
             if (dw > width && dh > height) {
                 scale = Math.min(width * 1.0f / dw, dh * 1.0f / height);
             }
-            initScale = scale;
+            mInitScale = scale;
             //将图片移至中心
             mScaleMatrix.postTranslate((width - dw) * 1.0f / 2, (height - dh) * 1.0f / 2);
             //缩放
             mScaleMatrix.postScale(scale, scale, getWidth() * 1.0f / 2, getHeight() * 1.0f / 2);
             setImageMatrix(mScaleMatrix);
-            once = false;
+            mFirst = false;
         }
     }
 
@@ -452,7 +452,7 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
                 mScaleMatrix.postScale(deltaScale, deltaScale, x, y);
                 checkBorderAndCenterWhenScale();
                 setImageMatrix(mScaleMatrix);
-                isAutoScale = false;
+                mAutoScale = false;
             }
         }
     }
