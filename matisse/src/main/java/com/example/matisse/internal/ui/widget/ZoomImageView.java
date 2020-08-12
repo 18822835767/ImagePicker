@@ -520,11 +520,11 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
         private Scroller mScroller;
         private int mCurrentX , mCurrentY;
 
-        public FlingRunnable(Context context){
+        FlingRunnable(Context context){
             mScroller = new Scroller(context);
         }
 
-        public void cancelFling(){
+        void cancelFling(){
             mScroller.forceFinished(true);
         }
 
@@ -533,18 +533,15 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
          * 调用scroller.fling方法，这个方法内部能够自动计算惯性滑动
          * 的x和y的变化率，根据这个变化率我们就可以对图片进行平移了
          */
-        public void fling(int viewWidth , int viewHeight , int velocityX ,
-                          int velocityY){
+        void fling(int viewWidth, int viewHeight, int velocityX,
+                   int velocityY){
             RectF rectF = getMatrixRectF();
-            if (rectF == null){
-                return;
-            }
             //startX为当前图片左边界的x坐标
             final int startX = Math.round(-rectF.left);
             final int minX , maxX , minY , maxY;
             //如果图片宽度大于控件宽度
             if (rectF.width() > viewWidth){
-                //这是一个滑动范围[minX,maxX]，详情见下图
+                //这是一个滑动范围[minX,maxX]
                 minX = 0;
                 maxX = Math.round(rectF.width() - viewWidth);
             }else{
@@ -566,6 +563,8 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
                 //调用fling方法，然后我们可以通过调用getCurX和getCurY来获得当前的x和y坐标
                 //这个坐标的计算是模拟一个惯性滑动来计算出来的，我们根据这个x和y的变化可以模拟
                 //出图片的惯性滑动
+                //startX代表的是滑动点的坐标，该坐标在计算滑动时坐标区间在[minX,maxX]之间
+                Log.d(TAG, "startX:"+startX+"  startY:"+startY+"  Vx:"+velocityX+"  Vy:"+velocityY+"  minX:"+minX+"  maxX:"+maxX+"  minY:"+minY+"  maxY:"+maxY);
                 mScroller.fling(startX,startY,velocityX,velocityY,minX,maxX,minY,maxY);
             }
 
@@ -585,6 +584,7 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
                 final int newX = mScroller.getCurrX();
                 //获得当前的y坐标
                 final int newY = mScroller.getCurrY();
+                Log.d(TAG, "mCurrentX:"+mCurrentX+"  newX:"+newX+"  mCurrentY:"+mCurrentY+"  newY:"+newY);
                 //进行平移操作
                 mScaleMatrix.postTranslate(mCurrentX-newX , mCurrentY-newY);
                 checkMatrixBounds();
