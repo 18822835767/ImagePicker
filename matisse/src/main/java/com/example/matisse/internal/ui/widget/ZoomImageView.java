@@ -110,7 +110,8 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
                     //当前放大倍数达到SCALE_MAX
                 } else {
                     //缩小到初始大小
-                    ZoomImageView.this.postDelayed(new AutoScaleRunnable(mInitScale, x, y), 16);
+                    //这里乘以0.99是为了解决一个很奇怪的bug（缩小到原图后无法移动）
+                    ZoomImageView.this.postDelayed(new AutoScaleRunnable((float) (mInitScale * 0.99), x, y), 16);
                     mAutoScale = true;
                 }
                 return true;
