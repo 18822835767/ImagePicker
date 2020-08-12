@@ -9,8 +9,11 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.OverScroller;
+import android.widget.Scroller;
 
 
 public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView implements
@@ -75,7 +78,16 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
     private boolean mCheckTopAndBottom = true;
 
     private boolean mCheckLeftAndRight = true;
+    
+    private OverScroller mScroller;
 
+    /**
+     * 速度追踪器
+     */
+    private VelocityTracker mVelocityTracker;
+
+    private FlingRunnable mFlingRunnable;
+    
     public ZoomImageView(Context context) {
         this(context, null);
     }
@@ -116,11 +128,7 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
                 }
                 return true;
             }
-
-            @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                return super.onFling(e1, e2, velocityX, velocityY);
-            }
+            
         });
         
         mScaleGestureDetector = new ScaleGestureDetector(context, this);
@@ -212,6 +220,17 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                //初始化速度检测器
+                mVelocityTracker = VelocityTracker.obtain();
+                if (mVelocityTracker != null){
+                    //将当前的事件添加到检测器中
+                    mVelocityTracker.addMovement(event);
+                }
+                //当手指再次点击到图片时，停止图片的惯性滑动
+                if (mFlingRunnable != null){
+                    mFlingRunnable.cancelFling();
+                    mFlingRunnable = null;
+                }
                 //解决滑动冲突，当宽或高大于屏幕宽度或高时，因为此时可以移动，所以让事件不被父View拦截
                 if (rectF.width() > getWidth() || rectF.height() > getHeight()) {
                     getParent().requestDisallowInterceptTouchEvent(true);
@@ -227,6 +246,11 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
                 float dy = y - mLastY;
                 
                 if (getDrawable() != null) {
+                    if (mVelocityTracker != null){
+                        //将当前事件添加到检测器中
+                        mVelocityTracker.addMovement(event);
+                    }
+                    
                     mCheckLeftAndRight = mCheckTopAndBottom = true;
                     // 如果宽度小于屏幕宽度，则禁止左右移动
                     if (rectF.width() < getWidth()) {
@@ -250,7 +274,31 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
                 mLastY = y;
                 break;
             case MotionEvent.ACTION_UP:
+                if (mVelocityTracker != null){
+                    //将当前事件添加到检测器中
+                    mVelocityTracker.addMovement(event);
+                    //计算当前的速度
+                    mVelocityTracker.computeCurrentVelocity(1000);
+                    //得到当前x方向速度
+                    final float vX = mVelocityTracker.getXVelocity();
+                    //得到当前y方向的速度
+                    final float vY = mVelocityTracker.getYVelocity();
+                    mFlingRunnable = new FlingRunnable(getContext());
+                    //调用fling方法，传入控件宽高和当前x和y轴方向的速度
+                    //这里得到的vX和vY和scroller需要的velocityX和velocityY的负号正好相反
+                    //所以传入一个负值
+                    mFlingRunnable.fling(getWidth(),getHeight(),(int)-vX,(int)-vY);
+                    //执行run方法
+                    post(mFlingRunnable);
+                }
+                mLastPointCount = 0;
+                break;
             case MotionEvent.ACTION_CANCEL:
+                //释放速度检测器
+                if (mVelocityTracker != null){
+                    mVelocityTracker.recycle();
+                    mVelocityTracker = null;
+                }
                 mLastPointCount = 0;
                 break;
         }
@@ -461,6 +509,91 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
                 checkBorderAndCenterWhenScale();
                 setImageMatrix(mScaleMatrix);
                 mAutoScale = false;
+            }
+        }
+    }
+
+    /**
+     * 惯性滑动
+     */
+    private class FlingRunnable implements Runnable{
+        private Scroller mScroller;
+        private int mCurrentX , mCurrentY;
+
+        public FlingRunnable(Context context){
+            mScroller = new Scroller(context);
+        }
+
+        public void cancelFling(){
+            mScroller.forceFinished(true);
+        }
+
+        /**
+         * 这个方法主要是从onTouch中或得到当前滑动的水平和竖直方向的速度
+         * 调用scroller.fling方法，这个方法内部能够自动计算惯性滑动
+         * 的x和y的变化率，根据这个变化率我们就可以对图片进行平移了
+         */
+        public void fling(int viewWidth , int viewHeight , int velocityX ,
+                          int velocityY){
+            RectF rectF = getMatrixRectF();
+            if (rectF == null){
+                return;
+            }
+            //startX为当前图片左边界的x坐标
+            final int startX = Math.round(-rectF.left);
+            final int minX , maxX , minY , maxY;
+            //如果图片宽度大于控件宽度
+            if (rectF.width() > viewWidth){
+                //这是一个滑动范围[minX,maxX]，详情见下图
+                minX = 0;
+                maxX = Math.round(rectF.width() - viewWidth);
+            }else{
+                //如果图片宽度小于控件宽度，则不允许滑动
+                minX = maxX = startX;
+            }
+            //如果图片高度大于控件高度，同理
+            final int startY = Math.round(-rectF.top);
+            if (rectF.height() > viewHeight){
+                minY = 0;
+                maxY = Math.round(rectF.height() - viewHeight);
+            }else{
+                minY = maxY = startY;
+            }
+            mCurrentX = startX;
+            mCurrentY = startY;
+
+            if (startX != maxX || startY != maxY){
+                //调用fling方法，然后我们可以通过调用getCurX和getCurY来获得当前的x和y坐标
+                //这个坐标的计算是模拟一个惯性滑动来计算出来的，我们根据这个x和y的变化可以模拟
+                //出图片的惯性滑动
+                mScroller.fling(startX,startY,velocityX,velocityY,minX,maxX,minY,maxY);
+            }
+
+        }
+
+        /**
+         * 每隔16ms调用这个方法，实现惯性滑动的动画效果
+         */
+        @Override
+        public void run() {
+            if (mScroller.isFinished()){
+                return;
+            }
+            //如果返回true，说明当前的动画还没有结束，我们可以获得当前的x和y的值
+            if (mScroller.computeScrollOffset()){
+                //获得当前的x坐标
+                final int newX = mScroller.getCurrX();
+                //获得当前的y坐标
+                final int newY = mScroller.getCurrY();
+                //进行平移操作
+                mScaleMatrix.postTranslate(mCurrentX-newX , mCurrentY-newY);
+                checkMatrixBounds();
+                setImageMatrix(mScaleMatrix);
+
+                mCurrentX = newX;
+                mCurrentY = newY;
+                //每16ms调用一次
+                postDelayed(this,16);
             }
         }
     }
